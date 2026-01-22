@@ -9,14 +9,8 @@
 export { sigmoid } from './sigmoid';
 
 // Scenario configurations
-export {
-  scenarios,
-  baseParams,
-  getScenarioParams,
-  type ScenarioParams,
-  type BaseParams,
-  type ScenarioName
-} from './scenarios';
+export { scenarios, baseParams, getScenarioParams } from './scenarios';
+export type { ScenarioParams, BaseParams, ScenarioName } from './scenarios';
 
 // Projection functions
 export {

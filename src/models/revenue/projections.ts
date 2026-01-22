@@ -2,7 +2,8 @@
  * Revenue projection calculations
  */
 
-import { PricingConfig, defaultPricing } from './pricing';
+import type { PricingConfig } from './pricing';
+import { defaultPricing } from './pricing';
 
 /**
  * Calculate revenue for a given period

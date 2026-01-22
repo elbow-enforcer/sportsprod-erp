@@ -1,26 +1,73 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { Layout } from './components/Layout/Layout'
+import { Dashboard } from './dashboard/Dashboard'
 
-const queryClient = new QueryClient()
+// Placeholder pages for other routes
+function PlaceholderPage({ title }: { title: string }) {
+  return (
+    <div className="flex items-center justify-center h-64">
+      <div className="text-center">
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">{title}</h2>
+        <p className="text-gray-500">Coming soon...</p>
+      </div>
+    </div>
+  )
+}
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <div className="min-h-screen bg-gray-50">
-        <header className="bg-white shadow">
-          <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-            <h1 className="text-3xl font-bold tracking-tight text-gray-900">
-              SportsProd ERP
-            </h1>
-          </div>
-        </header>
-        <main>
-          <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-            {/* TODO: Add routing here */}
-            <p className="text-gray-600">Financial Model Dashboard</p>
-          </div>
-        </main>
-      </div>
-    </QueryClientProvider>
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <Layout title="Dashboard">
+              <Dashboard />
+            </Layout>
+          }
+        />
+        <Route
+          path="/projections"
+          element={
+            <Layout title="Projections">
+              <PlaceholderPage title="Projections" />
+            </Layout>
+          }
+        />
+        <Route
+          path="/revenue"
+          element={
+            <Layout title="Revenue">
+              <PlaceholderPage title="Revenue" />
+            </Layout>
+          }
+        />
+        <Route
+          path="/costs"
+          element={
+            <Layout title="Costs">
+              <PlaceholderPage title="Costs" />
+            </Layout>
+          }
+        />
+        <Route
+          path="/marketing"
+          element={
+            <Layout title="Marketing">
+              <PlaceholderPage title="Marketing" />
+            </Layout>
+          }
+        />
+        <Route
+          path="/capital"
+          element={
+            <Layout title="Capital">
+              <PlaceholderPage title="Capital" />
+            </Layout>
+          }
+        />
+      </Routes>
+    </BrowserRouter>
   )
 }
 
