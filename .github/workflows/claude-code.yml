@@ -2,24 +2,50 @@ name: Claude Code Review
 
 on:
   pull_request:
-    types: [opened, synchronize]
+    types: [opened, synchronize, reopened]
   issue_comment:
     types: [created]
   pull_request_review_comment:
     types: [created]
 
 jobs:
-  claude-code:
+  claude-review:
     runs-on: ubuntu-latest
+    if: |
+      github.event_name == 'pull_request' ||
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude'))
+    
     permissions:
       contents: read
       pull-requests: write
       issues: write
     
     steps:
-      - name: Claude Code Action
+      - name: Claude Code Review
         uses: anthropics/claude-code-action@beta
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          # Trigger on @claude mentions in comments
-          # Or automatic PR review on open/sync
+          model: claude-sonnet-4-20250514
+          timeout_minutes: 10
+          
+          # Custom instructions for review
+          custom_instructions: |
+            You are a senior engineering manager reviewing this PR.
+            
+            Review Guidelines:
+            1. Check for TypeScript errors and type safety
+            2. Verify unit tests exist for new functions
+            3. Check for proper error handling
+            4. Review code organization and modularity
+            5. Ensure consistent naming conventions
+            6. Flag any security concerns
+            7. Suggest performance improvements
+            
+            After review, categorize findings:
+            - 🔴 MUST FIX: Critical issues blocking merge
+            - 🟡 SHOULD FIX: Important improvements
+            - 🟢 NICE TO HAVE: Optional enhancements
+            
+            If suggesting changes, be specific with code examples.
+            Create follow-up issues for non-blocking improvements.
