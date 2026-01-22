@@ -1,0 +1,64 @@
+name: Claude Review → Issues
+
+on:
+  pull_request_review:
+    types: [submitted]
+  issue_comment:
+    types: [created]
+
+jobs:
+  parse-review-create-issues:
+    runs-on: ubuntu-latest
+    if: |
+      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '🟡')) ||
+      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '🟢')) ||
+      (github.event_name == 'issue_comment' && github.event.comment.user.login == 'github-actions[bot]')
+    
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: read
+    
+    steps:
+      - name: Parse Review and Create Issues
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.review?.body || context.payload.comment?.body || '';
+            const prNumber = context.payload.pull_request?.number || context.payload.issue?.number;
+            
+            // Parse 🟡 SHOULD FIX items
+            const shouldFix = body.match(/🟡\s*SHOULD FIX[:\s]*([^\n🔴🟢]+)/gi) || [];
+            
+            // Parse 🟢 NICE TO HAVE items  
+            const niceToHave = body.match(/🟢\s*NICE TO HAVE[:\s]*([^\n🔴🟡]+)/gi) || [];
+            
+            // Create issues for SHOULD FIX items
+            for (const item of shouldFix) {
+              const title = item.replace(/🟡\s*SHOULD FIX[:\s]*/i, '').trim().substring(0, 80);
+              if (title.length > 10) {
+                await github.rest.issues.create({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  title: `[Review] ${title}`,
+                  body: `From PR #${prNumber} review:\n\n${item}\n\n---\n_Auto-created from Claude Code review_`,
+                  labels: ['review-feedback', 'priority:medium']
+                });
+                console.log(`Created issue: ${title}`);
+              }
+            }
+            
+            // Create issues for NICE TO HAVE items
+            for (const item of niceToHave) {
+              const title = item.replace(/🟢\s*NICE TO HAVE[:\s]*/i, '').trim().substring(0, 80);
+              if (title.length > 10) {
+                await github.rest.issues.create({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  title: `[Enhancement] ${title}`,
+                  body: `From PR #${prNumber} review:\n\n${item}\n\n---\n_Auto-created from Claude Code review_`,
+                  labels: ['review-feedback', 'enhancement']
+                });
+                console.log(`Created issue: ${title}`);
+              }
+            }
