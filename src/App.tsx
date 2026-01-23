@@ -5,6 +5,8 @@ import { Projections } from './projections'
 import { Costs } from './costs'
 import { Revenue } from './revenue'
 import { Marketing, LaunchPlan, EmailSequences, Campaigns, MarketingAnalytics, ReferralProgram, VideoPlaybook, VideoIdeasBank, CompetitorResearch, VideoBriefTemplate } from './marketing'
+import { PreorderSettings } from './preorder'
+import { DepositConfiguration } from './preorder'
 import { FPADashboard, QuickBooksConnect, AccountMapping, Historicals, QBOActualsImport } from './fpa'
 import { IncomeStatement, BalanceSheet, CashFlowStatement } from './financials'
 import { Inventory } from './inventory'
@@ -305,6 +307,20 @@ function App() {
               </ProtectedRoute>
             }
           />
+          {/* Pre-order Routes */}
+          <Route
+            path="/preorder"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:preorder" fallback={<AccessDenied />}>
+                  <Layout title="Pre-order Settings">
+                    <PreorderSettings />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          
           <Route
             path="/financials/income-statement"
             element={
@@ -407,6 +423,18 @@ function App() {
               <Layout title="Pricing">
                 <Pricing />
               </Layout>
+            }
+          />
+          <Route
+            path="/preorder/deposits"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:revenue" fallback={<AccessDenied />}>
+                  <Layout title="Deposit Configuration">
+                    <DepositConfiguration />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
             }
           />
           <Route
