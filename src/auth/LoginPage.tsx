@@ -1,16 +1,21 @@
 import { useState, FormEvent } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from './AuthProvider';
+import { Role, ROLE_LABELS } from './permissions';
+
+const ROLES: Role[] = ['admin', 'finance', 'management', 'sales_marketing', 'operations'];
 
 export function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState<Role>('admin');
   const [error, setError] = useState('');
   const { login, loading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/';
+  const isDev = import.meta.env.DEV;
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -22,7 +27,7 @@ export function LoginPage() {
     }
 
     try {
-      await login(email, password);
+      await login(email, password, role);
       navigate(from, { replace: true });
     } catch {
       setError('Login failed. Please try again.');
@@ -73,6 +78,28 @@ export function LoginPage() {
               disabled={loading}
             />
           </div>
+
+          {/* Dev-only role selector */}
+          {isDev && (
+            <div>
+              <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-1">
+                Role <span className="text-yellow-600">(dev only)</span>
+              </label>
+              <select
+                id="role"
+                value={role}
+                onChange={(e) => setRole(e.target.value as Role)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                disabled={loading}
+              >
+                {ROLES.map((r) => (
+                  <option key={r} value={r}>
+                    {ROLE_LABELS[r]}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           <button
             type="submit"

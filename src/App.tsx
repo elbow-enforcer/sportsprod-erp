@@ -5,6 +5,7 @@ import { Projections } from './projections'
 import { Marketing, LaunchPlan, EmailSequences, Campaigns, MarketingAnalytics } from './marketing'
 import { Inventory } from './inventory'
 import { Pricing } from './pricing'
+import { AuthProvider, ProtectedRoute, LoginPage, RoleSelector, PermissionGate } from './auth'
 
 // Placeholder pages for other routes
 function PlaceholderPage({ title }: { title: string }) {
@@ -18,108 +19,170 @@ function PlaceholderPage({ title }: { title: string }) {
   )
 }
 
+function AccessDenied() {
+  return (
+    <div className="flex items-center justify-center h-64">
+      <div className="text-center">
+        <h2 className="text-2xl font-bold text-red-600 mb-2">Access Denied</h2>
+        <p className="text-gray-500">You don't have permission to view this page.</p>
+      </div>
+    </div>
+  )
+}
+
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <Layout title="Dashboard">
-              <Dashboard />
-            </Layout>
-          }
-        />
-        <Route
-          path="/projections"
-          element={
-            <Layout title="Projections">
-              <Projections />
-            </Layout>
-          }
-        />
-        <Route
-          path="/revenue"
-          element={
-            <Layout title="Revenue">
-              <PlaceholderPage title="Revenue" />
-            </Layout>
-          }
-        />
-        <Route
-          path="/costs"
-          element={
-            <Layout title="Costs">
-              <PlaceholderPage title="Costs" />
-            </Layout>
-          }
-        />
-        <Route
-          path="/marketing"
-          element={
-            <Layout title="Marketing">
-              <Marketing />
-            </Layout>
-          }
-        />
-        <Route
-          path="/marketing/launch"
-          element={
-            <Layout title="Launch Plan">
-              <LaunchPlan />
-            </Layout>
-          }
-        />
-        <Route
-          path="/marketing/email"
-          element={
-            <Layout title="Email Sequences">
-              <EmailSequences />
-            </Layout>
-          }
-        />
-        <Route
-          path="/marketing/campaigns"
-          element={
-            <Layout title="Campaigns">
-              <Campaigns />
-            </Layout>
-          }
-        />
-        <Route
-          path="/marketing/analytics"
-          element={
-            <Layout title="Marketing Analytics">
-              <MarketingAnalytics />
-            </Layout>
-          }
-        />
-        <Route
-          path="/pricing"
-          element={
-            <Layout title="Pricing">
-              <Pricing />
-            </Layout>
-          }
-        />
-        <Route
-          path="/capital"
-          element={
-            <Layout title="Capital">
-              <PlaceholderPage title="Capital" />
-            </Layout>
-          }
-        />
-        <Route
-          path="/inventory"
-          element={
-            <Layout title="Inventory">
-              <Inventory />
-            </Layout>
-          }
-        />
-      </Routes>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        {/* Dev-only role selector */}
+        {import.meta.env.DEV && <RoleSelector />}
+        
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:dashboard" fallback={<AccessDenied />}>
+                  <Layout title="Dashboard">
+                    <Dashboard />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/projections"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:projections" fallback={<AccessDenied />}>
+                  <Layout title="Projections">
+                    <Projections />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/revenue"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:revenue" fallback={<AccessDenied />}>
+                  <Layout title="Revenue">
+                    <PlaceholderPage title="Revenue" />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/costs"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:costs" fallback={<AccessDenied />}>
+                  <Layout title="Costs">
+                    <PlaceholderPage title="Costs" />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/capital"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:capital" fallback={<AccessDenied />}>
+                  <Layout title="Capital">
+                    <PlaceholderPage title="Capital" />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/inventory"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:inventory" fallback={<AccessDenied />}>
+                  <Layout title="Inventory">
+                    <Inventory />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/marketing"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:marketing" fallback={<AccessDenied />}>
+                  <Layout title="Marketing">
+                    <Marketing />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/marketing/launch"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:marketing" fallback={<AccessDenied />}>
+                  <Layout title="Launch Plan">
+                    <LaunchPlan />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/marketing/email"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:marketing" fallback={<AccessDenied />}>
+                  <Layout title="Email Sequences">
+                    <EmailSequences />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/marketing/campaigns"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:marketing" fallback={<AccessDenied />}>
+                  <Layout title="Campaigns">
+                    <Campaigns />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/marketing/analytics"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:marketing" fallback={<AccessDenied />}>
+                  <Layout title="Marketing Analytics">
+                    <MarketingAnalytics />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/pricing"
+            element={
+              <Layout title="Pricing">
+                <Pricing />
+              </Layout>
+            }
+          />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   )
 }
 
