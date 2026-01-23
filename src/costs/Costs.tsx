@@ -7,6 +7,12 @@ import { useGnaStore } from '../stores/gnaStore'
 import { useAssumptionsStore } from '../stores/assumptionsStore'
 import { getAnnualProjections } from '../models/adoption'
 import { calculateCOGSBreakdown, type COGSBreakdownResult } from '../models/cogs'
+import { 
+  calculateToolingAmortization, 
+  generateToolingProjections,
+  calculateToolingCostPerUnit,
+  type ToolingProjection 
+} from '../models/capex'
 
 // Format currency values for display
 const formatCurrency = (value: number): string => {
@@ -249,6 +255,96 @@ function COGSConfigPanel({
   )
 }
 
+// Tooling Cost Projection Table (Issue #9)
+function ToolingProjectionTable({ 
+  projection, 
+  toolingCost,
+  retoolingYears 
+}: { 
+  projection: ToolingProjection;
+  toolingCost: number;
+  retoolingYears: number;
+}) {
+  return (
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900">
+            Tooling Amortization Schedule
+          </h3>
+          <p className="text-sm text-gray-500 mt-1">
+            Initial investment: {formatCurrency(toolingCost)} • {retoolingYears}-year cycle
+          </p>
+        </div>
+        <div className="flex gap-3">
+          <div className="text-center px-3 py-1 bg-blue-50 rounded-lg">
+            <p className="text-xs text-blue-600 font-medium">Total Amortization</p>
+            <p className="text-lg font-bold text-blue-700">{formatCurrency(projection.totalAmortization)}</p>
+          </div>
+          <div className="text-center px-3 py-1 bg-amber-50 rounded-lg">
+            <p className="text-xs text-amber-600 font-medium">Re-tooling CapEx</p>
+            <p className="text-lg font-bold text-amber-700">{formatCurrency(projection.totalRetoolingInvestments)}</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="overflow-x-auto">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead>
+            <tr>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Year
+              </th>
+              <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Amortization
+              </th>
+              <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Re-tooling CapEx
+              </th>
+              <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Cycle
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100">
+            {projection.years.map((yearData, idx) => (
+              <tr 
+                key={yearData.year} 
+                className={yearData.isRetoolingYear ? 'bg-amber-50' : 'hover:bg-gray-50'}
+              >
+                <td className="px-4 py-3 text-sm text-gray-900 font-medium">
+                  {yearData.year}
+                </td>
+                <td className="px-4 py-3 text-sm text-gray-600 text-right">
+                  {formatCurrency(yearData.amortizationExpense)}
+                </td>
+                <td className="px-4 py-3 text-sm text-right font-medium">
+                  {yearData.retoolingInvestment > 0 ? (
+                    <span className="text-amber-700">{formatCurrency(yearData.retoolingInvestment)}</span>
+                  ) : (
+                    <span className="text-gray-400">—</span>
+                  )}
+                </td>
+                <td className="px-4 py-3 text-center">
+                  {yearData.isRetoolingYear ? (
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                      🔧 Re-tool
+                    </span>
+                  ) : (
+                    <span className="text-sm text-gray-500">
+                      Year {(idx % retoolingYears) + 1} of {retoolingYears}
+                    </span>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  )
+}
+
 // Salary table component (restricted via PermissionGate)
 function SalaryTable() {
   const { personnel } = useGnaStore()
@@ -333,7 +429,7 @@ function SalaryTable() {
 export function Costs() {
   const { selectedScenarioId, scenarios } = useScenarioStore()
   const selectedScenario = scenarios.find((s) => s.id === selectedScenarioId)
-  const { cogs: cogsConfig, updateCOGS } = useAssumptionsStore()
+  const { cogs: cogsConfig, capital: capitalConfig, corporate: corporateConfig, updateCOGS } = useAssumptionsStore()
 
   // Calculate costs based on scenario and COGS config
   const costData = useMemo(() => {
@@ -347,6 +443,15 @@ export function Costs() {
       dutiesCost: cogsConfig.dutiesCost,
     })
 
+    // Calculate tooling amortization (Issue #9)
+    const toolingCost = capitalConfig.toolingCost ?? 85000
+    const retoolingYears = capitalConfig.retoolingYears ?? 3
+    const projectionYears = corporateConfig.projectionYears ?? 10
+    
+    const toolingAmortization = calculateToolingAmortization(toolingCost, retoolingYears)
+    const toolingProjection = generateToolingProjections(toolingCost, retoolingYears, projectionYears, 2025)
+    const toolingCostPerUnit = calculateToolingCostPerUnit(toolingAmortization, units)
+
     const revenue = units * 1000
     const marketingBase = 30000
     const marketingVariable = revenue * 0.1
@@ -354,7 +459,8 @@ export function Costs() {
 
     const gna = 50000
 
-    const totalCosts = cogsBreakdown.totalCost + marketing + gna
+    // Include tooling amortization in total costs
+    const totalCosts = cogsBreakdown.totalCost + marketing + gna + toolingAmortization
 
     return {
       units,
@@ -363,8 +469,14 @@ export function Costs() {
       marketing,
       gna,
       totalCosts,
+      // Tooling data (Issue #9)
+      toolingCost,
+      retoolingYears,
+      toolingAmortization,
+      toolingProjection,
+      toolingCostPerUnit,
     }
-  }, [selectedScenarioId, cogsConfig])
+  }, [selectedScenarioId, cogsConfig, capitalConfig, corporateConfig])
 
   return (
     <div className="space-y-6">
@@ -379,7 +491,7 @@ export function Costs() {
       )}
 
       {/* KPI Cards Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <KPICard
           title="Total Costs"
           value={formatCurrency(costData.totalCosts)}
@@ -407,6 +519,13 @@ export function Costs() {
           trend={{ value: 2.1, isPositive: false }}
           icon={<span className="text-2xl">🏢</span>}
           subtitle="Personnel & overhead"
+        />
+        <KPICard
+          title="Tooling"
+          value={formatCurrency(costData.toolingAmortization)}
+          trend={{ value: 0, isPositive: true }}
+          icon={<span className="text-2xl">🔧</span>}
+          subtitle={`$${costData.toolingCostPerUnit.toFixed(2)}/unit`}
         />
       </div>
 
@@ -438,6 +557,13 @@ export function Costs() {
 
       {/* COGS Breakdown Table */}
       <COGSTable breakdown={costData.cogsBreakdown} units={costData.units} />
+
+      {/* Tooling Amortization Schedule (Issue #9) */}
+      <ToolingProjectionTable 
+        projection={costData.toolingProjection}
+        toolingCost={costData.toolingCost}
+        retoolingYears={costData.retoolingYears}
+      />
 
       {/* G&A Section with Salary Gate */}
       <div className="space-y-4">

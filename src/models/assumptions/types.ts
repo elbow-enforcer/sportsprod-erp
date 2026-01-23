@@ -1,8 +1,16 @@
+export interface DiscountTiers {
+  individual: number;            // Default 0%
+  pt: number;                    // Default 7.5%
+  doctor: number;                // Default 12.5%
+  wholesaler: number;            // Default 20%
+}
+
 export interface RevenueAssumptions {
   basePrice: number;             // Default $1,000 (base price for calculations)
   pricePerUnit: number;          // Default $1,000
   annualPriceIncrease: number;   // Default 0% (or 2-3%)
   discountRate: number;          // Default 5% (returns/discounts)
+  discountTiers: DiscountTiers;  // Tiered discounts by account type
 }
 
 export interface COGSAssumptions {
