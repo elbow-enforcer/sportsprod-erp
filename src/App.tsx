@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { Layout } from './components/Layout/Layout'
 import { Dashboard } from './dashboard/Dashboard'
 import { Projections } from './projections'
+import { Costs } from './costs'
 import { Marketing, LaunchPlan, EmailSequences, Campaigns, MarketingAnalytics, ReferralProgram } from './marketing'
 import { Inventory } from './inventory'
 import { Pricing } from './pricing'
@@ -82,7 +83,7 @@ function App() {
               <ProtectedRoute>
                 <PermissionGate permission="view:costs" fallback={<AccessDenied />}>
                   <Layout title="Costs">
-                    <PlaceholderPage title="Costs" />
+                    <Costs />
                   </Layout>
                 </PermissionGate>
               </ProtectedRoute>
