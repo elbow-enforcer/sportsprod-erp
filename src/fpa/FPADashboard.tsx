@@ -22,6 +22,7 @@ const kpiCards = [
 
 const quickLinks = [
   { path: '/fpa/quickbooks', label: 'QuickBooks Connection', icon: '🔗', desc: 'Manage QBO integration' },
+  { path: '/fpa/import', label: 'Import Actuals', icon: '📥', desc: 'Import P&L, Balance Sheet, Cash Flow' },
   { path: '/fpa/mapping', label: 'Account Mapping', icon: '🗂️', desc: 'Map accounts to model categories' },
   { path: '/fpa/historicals', label: 'Historical Data', icon: '📅', desc: 'View actuals vs budget' },
 ]

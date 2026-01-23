@@ -376,6 +376,18 @@ function App() {
             }
           />
           <Route
+            path="/fpa/import"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:fpa" fallback={<AccessDenied />}>
+                  <Layout title="QBO Actuals Import">
+                    <QBOActualsImport />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/pricing"
             element={
               <Layout title="Pricing">
