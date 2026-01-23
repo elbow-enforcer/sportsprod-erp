@@ -11,6 +11,8 @@ export type Permission =
   | 'view:capital'
   | 'view:dcf'
   | 'view:fpa'
+  | 'view:supply-chain'
+  | 'edit:supply-chain'
   | 'edit:settings'
   | 'manage:users';
 
@@ -26,6 +28,8 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'view:capital',
     'view:dcf',
     'view:fpa',
+    'view:supply-chain',
+    'edit:supply-chain',
     'edit:settings',
     'manage:users',
   ],
@@ -40,6 +44,7 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'view:capital',
     'view:dcf',
     'view:fpa',
+    'view:supply-chain',
   ],
   
   management: [
@@ -50,6 +55,8 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'view:marketing',
     'view:inventory',
     'view:capital',
+    'view:supply-chain',
+    'edit:supply-chain',
   ],
   
   sales_marketing: [
@@ -62,6 +69,8 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
   operations: [
     'view:dashboard',
     'view:inventory',
+    'view:supply-chain',
+    'edit:supply-chain',
   ],
 };
 

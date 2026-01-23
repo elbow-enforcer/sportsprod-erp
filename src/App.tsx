@@ -13,6 +13,7 @@ import { AllAssumptions } from './assumptions'
 import { Valuation, ValuationSummary } from './valuation'
 import { InvestorCohorts } from './investors'
 import { AuthProvider, ProtectedRoute, LoginPage, RoleSelector, PermissionGate } from './auth'
+import { SupplierList, SupplierDetail, PurchaseOrderList, PurchaseOrderDetail, Receiving } from './supply-chain'
 
 // Placeholder pages for other routes
 function PlaceholderPage({ title }: { title: string }) {
@@ -365,6 +366,66 @@ function App() {
               <Layout title="Pricing">
                 <Pricing />
               </Layout>
+            }
+          />
+          <Route
+            path="/supply-chain/suppliers"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:supply-chain" fallback={<AccessDenied />}>
+                  <Layout title="Suppliers">
+                    <SupplierList />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/supply-chain/suppliers/:id"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:supply-chain" fallback={<AccessDenied />}>
+                  <Layout title="Supplier Detail">
+                    <SupplierDetail />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/supply-chain/purchase-orders"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:supply-chain" fallback={<AccessDenied />}>
+                  <Layout title="Purchase Orders">
+                    <PurchaseOrderList />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/supply-chain/purchase-orders/:id"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:supply-chain" fallback={<AccessDenied />}>
+                  <Layout title="Purchase Order">
+                    <PurchaseOrderDetail />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/supply-chain/receiving"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:supply-chain" fallback={<AccessDenied />}>
+                  <Layout title="Receiving">
+                    <Receiving />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
             }
           />
         </Routes>

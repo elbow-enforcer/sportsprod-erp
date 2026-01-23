@@ -34,6 +34,12 @@ const capitalItems: NavItem[] = [
   { path: '/inventory', label: 'Inventory', icon: '📦', permission: 'view:inventory' },
 ]
 
+const supplyChainItems: NavItem[] = [
+  { path: '/supply-chain/suppliers', label: 'Suppliers', icon: '🏭', permission: 'view:supply-chain' },
+  { path: '/supply-chain/purchase-orders', label: 'Purchase Orders', icon: '📋', permission: 'view:supply-chain' },
+  { path: '/supply-chain/receiving', label: 'Receiving', icon: '📥', permission: 'view:supply-chain' },
+]
+
 const marketingItems: NavItem[] = [
   { path: '/marketing', label: 'Marketing', icon: '📣', permission: 'view:marketing' },
   { path: '/marketing/launch', label: 'Launch Plan', icon: '🚀', permission: 'view:marketing' },
@@ -129,6 +135,11 @@ export function Sidebar() {
         
         <SectionHeader label="Capital" collapsed={collapsed} />
         {capitalItems.map((item) => (
+          <NavItemLink key={item.path} item={item} collapsed={collapsed} />
+        ))}
+        
+        <SectionHeader label="Supply Chain" collapsed={collapsed} />
+        {supplyChainItems.map((item) => (
           <NavItemLink key={item.path} item={item} collapsed={collapsed} />
         ))}
         
