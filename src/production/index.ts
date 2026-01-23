@@ -67,3 +67,5 @@ export { ProductionRecording } from './ProductionRecording';
 export { QualityControl } from './QualityControl';
 export { RawMaterials } from './RawMaterials';
 export { ProductionDashboard } from './ProductionDashboard';
+export { MaterialConsumption as MaterialConsumptionPage } from './MaterialConsumption';
+export { FinishedGoods } from './FinishedGoods';
