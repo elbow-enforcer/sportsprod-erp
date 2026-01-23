@@ -10,8 +10,9 @@ import { IncomeStatement, BalanceSheet, CashFlowStatement } from './financials'
 import { Inventory } from './inventory'
 import { Pricing } from './pricing'
 import { AllAssumptions } from './assumptions'
-import { Valuation, ValuationSummary } from './valuation'
+import { Valuation, ValuationSummary, FCFProjections } from './valuation'
 import { InvestorCohorts } from './investors'
+import { RaiseScenarioMatrix } from './capital'
 import { AuthProvider, ProtectedRoute, LoginPage, RoleSelector, PermissionGate } from './auth'
 import { SupplierList, SupplierDetail, PurchaseOrderList, PurchaseOrderDetail, Receiving, VendorComparison } from './supply-chain'
 import { BidList, BidDetail } from './bids'
@@ -118,7 +119,7 @@ function App() {
               <ProtectedRoute>
                 <PermissionGate permission="view:capital" fallback={<AccessDenied />}>
                   <Layout title="Capital">
-                    <PlaceholderPage title="Capital" />
+                    <RaiseScenarioMatrix />
                   </Layout>
                 </PermissionGate>
               </ProtectedRoute>
@@ -155,6 +156,18 @@ function App() {
                 <PermissionGate permission="view:dcf" fallback={<AccessDenied />}>
                   <Layout title="DCF Valuation">
                     <Valuation />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/valuation/fcf"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:dcf" fallback={<AccessDenied />}>
+                  <Layout title="FCF Projections">
+                    <FCFProjections />
                   </Layout>
                 </PermissionGate>
               </ProtectedRoute>
