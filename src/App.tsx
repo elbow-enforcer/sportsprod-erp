@@ -4,7 +4,7 @@ import { Dashboard } from './dashboard/Dashboard'
 import { Projections } from './projections'
 import { Costs } from './costs'
 import { Revenue } from './revenue'
-import { Marketing, LaunchPlan, EmailSequences, Campaigns, MarketingAnalytics, ReferralProgram, VideoPlaybook, VideoIdeasBank, CompetitorResearch } from './marketing'
+import { Marketing, LaunchPlan, EmailSequences, Campaigns, MarketingAnalytics, ReferralProgram, VideoPlaybook, VideoIdeasBank, CompetitorResearch, VideoBriefTemplate } from './marketing'
 import { Inventory } from './inventory'
 import { Pricing } from './pricing'
 import { AllAssumptions } from './assumptions'
@@ -244,6 +244,30 @@ function App() {
                 <PermissionGate permission="view:marketing" fallback={<AccessDenied />}>
                   <Layout title="Video Ideas Bank">
                     <VideoIdeasBank />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/marketing/brief"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:marketing" fallback={<AccessDenied />}>
+                  <Layout title="Video Brief">
+                    <VideoBriefTemplate />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/marketing/competitors"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:marketing" fallback={<AccessDenied />}>
+                  <Layout title="Competitor Research">
+                    <CompetitorResearch />
                   </Layout>
                 </PermissionGate>
               </ProtectedRoute>

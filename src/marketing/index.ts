@@ -5,6 +5,7 @@ export { Campaigns } from './Campaigns'
 export { MarketingAnalytics } from './MarketingAnalytics'
 export { ReferralProgram } from './ReferralProgram'
 export { VideoPlaybook } from './VideoPlaybook'
+export { VideoBriefTemplate } from './VideoBriefTemplate'
 export { CompetitorResearch } from './CompetitorResearch'
 import VideoIdeasBankDefault from './VideoIdeasBank'
 export const VideoIdeasBank = VideoIdeasBankDefault

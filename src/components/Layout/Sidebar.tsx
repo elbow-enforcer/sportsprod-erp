@@ -36,6 +36,8 @@ const marketingItems: NavItem[] = [
   { path: '/marketing/referrals', label: 'Referrals', icon: '🤝', permission: 'view:marketing' },
   { path: '/marketing/playbook', label: 'Video Playbook', icon: '📹', permission: 'view:marketing' },
   { path: '/marketing/ideas', label: 'Video Ideas', icon: '💡', permission: 'view:marketing' },
+  { path: '/marketing/brief', label: 'Video Brief', icon: '📝', permission: 'view:marketing' },
+  { path: '/marketing/competitors', label: 'Competitors', icon: '🔍', permission: 'view:marketing' },
 ]
 
 function NavItemLink({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
