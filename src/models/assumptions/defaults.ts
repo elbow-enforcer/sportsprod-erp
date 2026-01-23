@@ -19,6 +19,12 @@ export const DEFAULT_COGS: COGSAssumptions = {
   unitCost: 200,
   costReductionPerYear: 0.05,
   shippingPerUnit: 25,
+  
+  // Separated COGS line items (sum = unitCost)
+  manufacturingCost: 140,        // 70% of unit cost
+  freightCost: 35,               // Overseas freight/transport
+  packagingCost: 15,             // Box, inserts, materials
+  dutiesCost: 10,                // Import duties
 };
 
 export const DEFAULT_MARKETING: MarketingAssumptions = {
