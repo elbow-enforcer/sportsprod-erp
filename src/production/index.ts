@@ -63,3 +63,4 @@ export { BOMCostChart } from './BOMCostChart';
 export { WorkOrderList } from './WorkOrderList';
 export { WorkOrderDetail } from './WorkOrderDetail';
 export { KanbanBoard } from './KanbanBoard';
+export { ProductionRecording } from './ProductionRecording';
