@@ -5,9 +5,15 @@ export interface RevenueAssumptions {
 }
 
 export interface COGSAssumptions {
-  unitCost: number;              // Default $200
+  unitCost: number;              // Default $200 (total, kept for backwards compatibility)
   costReductionPerYear: number;  // Default 5% (scale economies)
-  shippingPerUnit: number;       // Default $25
+  shippingPerUnit: number;       // Default $25 (outbound to customer)
+  
+  // Separated COGS line items
+  manufacturingCost: number;     // Manufacturing cost per unit (Default $140)
+  freightCost: number;           // Overseas freight/transport per unit (Default $35)
+  packagingCost: number;         // Box, inserts, materials per unit (Default $15)
+  dutiesCost: number;            // Import duties per unit (Default $10)
 }
 
 export interface MarketingAssumptions {

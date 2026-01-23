@@ -155,9 +155,13 @@ export const useAssumptionsStore = create<AssumptionsStore>()(
         rows.push(`Revenue,Discount Rate,${(state.revenue.discountRate * 100).toFixed(1)}%`);
         
         // COGS
-        rows.push(`COGS,Unit Cost,$${state.cogs.unitCost}`);
+        rows.push(`COGS,Unit Cost (Total),$${state.cogs.unitCost}`);
         rows.push(`COGS,Cost Reduction/Year,${(state.cogs.costReductionPerYear * 100).toFixed(1)}%`);
         rows.push(`COGS,Shipping per Unit,$${state.cogs.shippingPerUnit}`);
+        rows.push(`COGS,Manufacturing Cost,$${state.cogs.manufacturingCost}`);
+        rows.push(`COGS,Freight Cost,$${state.cogs.freightCost}`);
+        rows.push(`COGS,Packaging Cost,$${state.cogs.packagingCost}`);
+        rows.push(`COGS,Import Duties,$${state.cogs.dutiesCost}`);
         
         // Marketing
         rows.push(`Marketing,Base Budget,$${state.marketing.baseBudget}`);
