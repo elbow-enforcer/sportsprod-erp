@@ -17,6 +17,11 @@ import {
   calculateExitMultipleTV,
   calculateImpliedMultiple,
   calculateImpliedGrowthRate,
+  compareTerminalValueMethods,
+  getTerminalValueBreakdown,
+  getComparableCompanies,
+  getComparableMultipleStats,
+  COMPARABLE_COMPANIES,
 } from '../index';
 
 describe('DCF Model', () => {
@@ -329,6 +334,135 @@ describe('DCF Model', () => {
 
         expect(npvAtIRR.npv).toBeCloseTo(0, 6);
       }
+    });
+  });
+
+  describe('Terminal Value Comparison', () => {
+    describe('compareTerminalValueMethods', () => {
+      it('should compare both methods and calculate differences', () => {
+        const comparison = compareTerminalValueMethods(
+          500000,   // finalYearFCF
+          800000,   // finalYearEBITDA
+          0.02,     // growthRate
+          0.10,     // discountRate
+          10,       // exitMultiple
+          5         // projectionYears
+        );
+
+        // Gordon Growth: 500000 * (1.02) / (0.10 - 0.02) = 6,375,000
+        expect(comparison.gordonGrowth.terminalValue).toBe(6375000);
+        
+        // Exit Multiple: 800000 * 10 = 8,000,000
+        expect(comparison.exitMultiple.terminalValue).toBe(8000000);
+        
+        // Difference
+        expect(comparison.difference.terminalValue).toBe(1625000);
+        expect(comparison.difference.percentDifference).toBeCloseTo(25.49, 1);
+        
+        // Implied metrics
+        expect(comparison.gordonGrowth.impliedEbitdaMultiple).toBeCloseTo(7.97, 1);
+        expect(comparison.exitMultiple.impliedGrowthRate).toBeGreaterThan(0.02);
+      });
+
+      it('should handle when methods produce similar results', () => {
+        const comparison = compareTerminalValueMethods(
+          500000,
+          625000,  // EBITDA that would give similar TV at 10.2x multiple
+          0.02,
+          0.10,
+          10.2,
+          5
+        );
+
+        // Both should be close to 6,375,000
+        expect(Math.abs(comparison.difference.percentDifference)).toBeLessThan(5);
+      });
+    });
+
+    describe('getTerminalValueBreakdown', () => {
+      it('should return Gordon Growth breakdown with formula', () => {
+        const breakdown = getTerminalValueBreakdown(
+          'gordon-growth',
+          6375000,
+          3958373,
+          10000000,
+          500000,
+          800000,
+          0.02,
+          0.10,
+          8
+        );
+
+        expect(breakdown.method).toBe('gordon-growth');
+        expect(breakdown.gordonDetails).toBeDefined();
+        expect(breakdown.gordonDetails?.formula).toContain('FCF');
+        expect(breakdown.gordonDetails?.impliedMultiple).toBeCloseTo(7.97, 1);
+        expect(breakdown.percentOfEnterpriseValue).toBeCloseTo(39.58, 1);
+      });
+
+      it('should return Exit Multiple breakdown with comparables', () => {
+        const breakdown = getTerminalValueBreakdown(
+          'exit-multiple',
+          8000000,
+          4967370,
+          12000000,
+          500000,
+          1000000,
+          0.02,
+          0.10,
+          8
+        );
+
+        expect(breakdown.method).toBe('exit-multiple');
+        expect(breakdown.exitMultipleDetails).toBeDefined();
+        expect(breakdown.exitMultipleDetails?.formula).toContain('EBITDA');
+        expect(breakdown.exitMultipleDetails?.exitMultiple).toBe(8);
+        expect(breakdown.exitMultipleDetails?.comparableCompanies.length).toBeGreaterThan(0);
+      });
+    });
+
+    describe('getComparableCompanies', () => {
+      it('should return all companies when no filter', () => {
+        const companies = getComparableCompanies();
+        expect(companies.length).toBe(COMPARABLE_COMPANIES.length);
+      });
+
+      it('should filter by sector', () => {
+        const golfCompanies = getComparableCompanies('golf');
+        expect(golfCompanies.length).toBeGreaterThan(0);
+        golfCompanies.forEach((c) => {
+          expect(c.sector.toLowerCase()).toContain('golf');
+        });
+      });
+
+      it('should filter by multiple range', () => {
+        const conservativeCompanies = getComparableCompanies(undefined, 5, 9);
+        expect(conservativeCompanies.length).toBeGreaterThan(0);
+        conservativeCompanies.forEach((c) => {
+          expect(c.evEbitdaMultiple).toBeGreaterThanOrEqual(5);
+          expect(c.evEbitdaMultiple).toBeLessThanOrEqual(9);
+        });
+      });
+    });
+
+    describe('getComparableMultipleStats', () => {
+      it('should calculate statistics correctly', () => {
+        const stats = getComparableMultipleStats();
+        
+        expect(stats.ebitdaMultiple.mean).toBeGreaterThan(0);
+        expect(stats.ebitdaMultiple.median).toBeGreaterThan(0);
+        expect(stats.ebitdaMultiple.min).toBeLessThanOrEqual(stats.ebitdaMultiple.median);
+        expect(stats.ebitdaMultiple.max).toBeGreaterThanOrEqual(stats.ebitdaMultiple.median);
+        
+        expect(stats.revenueMultiple.mean).toBeGreaterThan(0);
+      });
+
+      it('should handle empty array', () => {
+        const stats = getComparableMultipleStats([]);
+        
+        expect(stats.ebitdaMultiple.mean).toBe(0);
+        expect(stats.ebitdaMultiple.median).toBe(0);
+      });
     });
   });
 });
