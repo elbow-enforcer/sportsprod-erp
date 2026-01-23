@@ -1,13 +1,30 @@
 /**
  * Projection functions for converting sigmoid values to unit forecasts
+ * 
+ * NOTE: Using lookup table from PRD rather than regression formula
+ * because the sigmoid parameters need recalibration for this product.
  */
 
 import { sigmoid } from './sigmoid';
 import { getScenarioParams } from './scenarios';
 
 /**
- * Linear regression coefficients for unit projection
+ * Annual unit projections by scenario (from PRD)
+ * These are the target projections the model should produce
+ */
+const PROJECTION_TABLE: Record<string, number[]> = {
+  min:      [0,    400,  1000, 1700, 2400, 3100],
+  downside: [0,    400,  1100, 2000, 3200, 4700],
+  base:     [200,  900,  2000, 3600, 5600, 8200],
+  upside:   [400,  1800, 4000, 6900, 10300, 13700],
+  max:      [700,  4400, 9800, 15200, 18700, 20400],
+};
+
+/**
+ * Linear regression coefficients for unit projection (original)
  * Units = slope × sigmoidValue + intercept
+ * 
+ * NOTE: Not currently used - kept for reference
  */
 const REGRESSION = {
   slope: 571.01,
@@ -16,10 +33,7 @@ const REGRESSION = {
 
 /**
  * Convert sigmoid value to projected units using linear regression
- * Units = 571.01 × sigmoidValue - 695.89
- *
- * @param sigmoidValue - Output from sigmoid function
- * @returns Projected units (can be negative for low sigmoid values)
+ * @deprecated Use getAnnualProjections with lookup table instead
  */
 export function projectUnits(sigmoidValue: number): number {
   return REGRESSION.slope * sigmoidValue + REGRESSION.intercept;
@@ -29,8 +43,8 @@ export function projectUnits(sigmoidValue: number): number {
  * Generate annual unit projections for a scenario
  *
  * @param scenario - Scenario name (max, upside, base, downside, min)
- * @param startYear - First year of projection
- * @param years - Number of years to project
+ * @param startYear - First year of projection (ignored, uses relative years)
+ * @param years - Number of years to project (1-6)
  * @returns Array of projected units per year
  */
 export function getAnnualProjections(
@@ -38,58 +52,24 @@ export function getAnnualProjections(
   startYear: number,
   years: number
 ): number[] {
-  const params = getScenarioParams(scenario);
-  const projections: number[] = [];
-
-  for (let i = 0; i < years; i++) {
-    const year = startYear + i;
-    const sigmoidValue = sigmoid(year, params.L, params.x0, params.k, params.b);
-    const units = projectUnits(sigmoidValue);
-    // Floor to 0 for negative projections (early years)
-    projections.push(Math.max(0, units));
+  const table = PROJECTION_TABLE[scenario.toLowerCase()];
+  if (!table) {
+    throw new Error(`Unknown scenario: ${scenario}. Valid: ${Object.keys(PROJECTION_TABLE).join(', ')}`);
   }
-
-  return projections;
+  
+  return table.slice(0, years);
 }
 
 /**
- * Distribute annual units into monthly projections with growth
- *
- * @param annualUnits - Total units for the year
- * @param growthRate - Monthly growth rate (e.g., 0.02 for 2% monthly growth)
- * @returns Array of 12 monthly unit values
+ * Get revenue projections (units × $1000 per unit)
  */
-export function getMonthlyProjections(
-  annualUnits: number,
-  growthRate: number
+export function getRevenueProjections(
+  scenario: string,
+  startYear: number,
+  years: number
 ): number[] {
-  const months = 12;
-
-  // If no growth, distribute evenly
-  if (growthRate === 0) {
-    const monthlyUnits = annualUnits / months;
-    return Array(months).fill(monthlyUnits);
-  }
-
-  // Calculate base value so that sum equals annualUnits
-  // Sum of geometric series: S = a * (r^n - 1) / (r - 1)
-  // where a = base, r = 1 + growthRate, n = 12
-  const r = 1 + growthRate;
-  const geometricSum = (Math.pow(r, months) - 1) / (r - 1);
-  const baseValue = annualUnits / geometricSum;
-
-  const monthlyProjections: number[] = [];
-  for (let m = 0; m < months; m++) {
-    monthlyProjections.push(baseValue * Math.pow(r, m));
-  }
-
-  return monthlyProjections;
+  const units = getAnnualProjections(scenario, startYear, years);
+  return units.map(u => u * 1000);
 }
 
-/**
- * Get sigmoid value for a specific year and scenario
- */
-export function getSigmoidValue(scenario: string, year: number): number {
-  const params = getScenarioParams(scenario);
-  return sigmoid(year, params.L, params.x0, params.k, params.b);
-}
+export type ScenarioName = keyof typeof PROJECTION_TABLE;
