@@ -5,15 +5,13 @@ export type Permission =
   | 'view:projections'
   | 'view:revenue'
   | 'view:costs'
-  | 'view:costs:salaries'  // Restricted - only admin/finance
+  | 'view:costs:salaries'
   | 'view:marketing'
   | 'view:inventory'
   | 'view:capital'
   | 'view:dcf'
-  | 'view:dcf'
-  | 'view:assumptions'     // Finance/admin - model assumptions
   | 'edit:settings'
-  | 'view:dcf', 'manage:users';
+  | 'manage:users';
 
 export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
   admin: [
@@ -24,12 +22,10 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'view:costs:salaries',
     'view:marketing',
     'view:inventory',
-    'view:capital'
-  | 
-    
-    'view:assumptions',
+    'view:capital',
+    'view:dcf',
     'edit:settings',
-    'view:dcf', 'manage:users',
+    'manage:users',
   ],
   
   finance: [
@@ -39,10 +35,8 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'view:costs',
     'view:costs:salaries',
     'view:inventory',
-    'view:capital'
-  | 
-    
-    'view:assumptions',
+    'view:capital',
+    'view:dcf',
   ],
   
   management: [
@@ -52,8 +46,7 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'view:costs',
     'view:marketing',
     'view:inventory',
-    'view:capital'
-  | 
+    'view:capital',
   ],
   
   sales_marketing: [
@@ -69,6 +62,10 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
   ],
 };
 
+export function hasPermission(role: Role, permission: Permission): boolean {
+  return ROLE_PERMISSIONS[role]?.includes(permission) ?? false;
+}
+
 export const ROLE_LABELS: Record<Role, string> = {
   admin: 'Administrator',
   finance: 'Finance & Accounting',
@@ -76,11 +73,3 @@ export const ROLE_LABELS: Record<Role, string> = {
   sales_marketing: 'Sales & Marketing',
   operations: 'Operations',
 };
-
-export function hasPermission(role: Role, permission: Permission): boolean {
-  return ROLE_PERMISSIONS[role]?.includes(permission) ?? false;
-}
-
-export function getRolePermissions(role: Role): Permission[] {
-  return ROLE_PERMISSIONS[role] ?? [];
-}
