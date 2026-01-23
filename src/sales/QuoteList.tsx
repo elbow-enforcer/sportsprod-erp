@@ -1,6 +1,10 @@
 /**
- * Quote List Component
- * US-2.1: Create quote for customer
+ * @file QuoteList.tsx
+ * @description Quote list view with status filters, search, and quick actions.
+ *              Supports quote creation, sending, and conversion to orders.
+ * @related-prd tasks/prd-sales-orders.md
+ * @module sales
+ * @implements US-2.1 Create quote for customer
  */
 
 import { useState } from 'react';

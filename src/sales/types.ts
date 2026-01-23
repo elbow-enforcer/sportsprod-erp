@@ -1,6 +1,10 @@
 /**
- * Sales & Order Management Module Types
- * US-1.1: Type Definitions for Customers, Quotes, Orders, Shipping
+ * @file types.ts
+ * @description TypeScript type definitions for the Sales & Orders module.
+ *              Defines interfaces for Customers, Quotes, Sales Orders,
+ *              Fulfillment, and Shipping entities.
+ * @related-prd tasks/prd-sales-orders.md
+ * @module sales
  */
 
 // ============================================================================

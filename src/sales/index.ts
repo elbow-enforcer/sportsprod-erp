@@ -1,5 +1,9 @@
 /**
- * Sales & Orders Module Exports
+ * @file index.ts
+ * @description Main export file for the Sales & Orders module.
+ *              Re-exports all components, store, and types.
+ * @related-prd tasks/prd-sales-orders.md
+ * @module sales
  */
 
 export { CustomerList } from './CustomerList';

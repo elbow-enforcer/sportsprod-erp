@@ -1,8 +1,12 @@
 /**
- * Sales Order Detail Component
- * US-3.2: Order line items with inventory check
- * US-3.3: Order status tracking
- * US-3.4: Order fulfillment workflow
+ * @file SalesOrderDetail.tsx
+ * @description Sales order detail view with visual status progress, line items,
+ *              shipping addresses, and fulfillment integration.
+ * @related-prd tasks/prd-sales-orders.md
+ * @module sales
+ * @implements US-3.2 Order line items with inventory check
+ * @implements US-3.3 Order status tracking
+ * @implements US-3.4 Order fulfillment workflow
  */
 
 import { useParams, Link, useNavigate } from 'react-router-dom';

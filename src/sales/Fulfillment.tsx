@@ -1,9 +1,13 @@
 /**
- * Fulfillment Component
- * US-4.1: Pick list generation
- * US-4.2: Packing slip / shipping label
- * US-4.3: Ship confirmation and tracking
- * US-4.4: Delivery confirmation
+ * @file Fulfillment.tsx
+ * @description Warehouse fulfillment center with pick list, packing workflow,
+ *              and shipment creation. Manages the pick-pack-ship process.
+ * @related-prd tasks/prd-sales-orders.md
+ * @module sales
+ * @implements US-4.1 Pick list generation
+ * @implements US-4.2 Packing slip / shipping label
+ * @implements US-4.3 Ship confirmation and tracking
+ * @implements US-4.4 Delivery confirmation
  */
 
 import { useState } from 'react';

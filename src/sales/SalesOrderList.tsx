@@ -1,7 +1,11 @@
 /**
- * Sales Order List Component
- * US-3.1: Sales order creation
- * US-3.3: Order status tracking
+ * @file SalesOrderList.tsx
+ * @description Sales order list view with status filters, search, and quick actions.
+ *              Displays order pipeline with priority indicators and fulfillment links.
+ * @related-prd tasks/prd-sales-orders.md
+ * @module sales
+ * @implements US-3.1 Sales order creation
+ * @implements US-3.3 Order status tracking
  */
 
 import { useState } from 'react';

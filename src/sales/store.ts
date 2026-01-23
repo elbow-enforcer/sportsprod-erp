@@ -1,6 +1,10 @@
 /**
- * Sales & Orders Zustand Store
- * Manages customers, quotes, orders, fulfillments, and shipments
+ * @file store.ts
+ * @description Zustand state management store for the Sales & Orders module.
+ *              Manages customers, quotes, orders, fulfillments, and shipments
+ *              with computed stats and CRUD actions.
+ * @related-prd tasks/prd-sales-orders.md
+ * @module sales
  */
 
 import { create } from 'zustand';

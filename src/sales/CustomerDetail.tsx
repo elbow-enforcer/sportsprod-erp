@@ -1,7 +1,11 @@
 /**
- * Customer Detail Component
- * US-1.2: Customer detail (contacts, addresses, terms)
- * US-1.3: Customer order history
+ * @file CustomerDetail.tsx
+ * @description Customer detail view with tabbed interface showing overview,
+ *              contacts, addresses, payment terms, orders, and quotes.
+ * @related-prd tasks/prd-sales-orders.md
+ * @module sales
+ * @implements US-1.2 Customer detail (contacts, addresses, terms)
+ * @implements US-1.3 Customer order history
  */
 
 import { useState } from 'react';

@@ -1,5 +1,9 @@
 /**
- * Mock Data for Sales & Orders Module
+ * @file mockData.ts
+ * @description Sample data for development and testing of the Sales & Orders module.
+ *              Includes mock customers, quotes, orders, fulfillments, and shipments.
+ * @related-prd tasks/prd-sales-orders.md
+ * @module sales
  */
 
 import type {

@@ -1,6 +1,10 @@
 /**
- * Customer List Component
- * US-1.1: Customer list with CRUD
+ * @file CustomerList.tsx
+ * @description Customer list view with search, filters, and CRUD operations.
+ *              Displays customer directory with type/status filters and stats cards.
+ * @related-prd tasks/prd-sales-orders.md
+ * @module sales
+ * @implements US-1.1 Customer list with CRUD
  */
 
 import { useState } from 'react';

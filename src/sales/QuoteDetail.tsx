@@ -1,7 +1,11 @@
 /**
- * Quote Detail Component
- * US-2.2: Quote line items (products, qty, pricing)
- * US-2.3: Quote approval and convert to order
+ * @file QuoteDetail.tsx
+ * @description Quote detail view showing line items, totals, and status actions.
+ *              Supports quote approval workflow and conversion to sales orders.
+ * @related-prd tasks/prd-sales-orders.md
+ * @module sales
+ * @implements US-2.2 Quote line items (products, qty, pricing)
+ * @implements US-2.3 Quote approval and convert to order
  */
 
 import { useParams, Link, useNavigate } from 'react-router-dom';
