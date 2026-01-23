@@ -18,14 +18,21 @@ interface AssumptionsActions {
   updateGNA: (updates: Partial<GNAAssumptions>) => void;
   updateCapital: (updates: Partial<CapitalAssumptions>) => void;
   updateCorporate: (updates: Partial<CorporateAssumptions>) => void;
+  resetRevenue: () => void;
+  resetCOGS: () => void;
+  resetMarketing: () => void;
+  resetGNA: () => void;
+  resetCapital: () => void;
+  resetCorporate: () => void;
   resetToDefaults: () => void;
+  exportAsJSON: () => string;
 }
 
 type AssumptionsStore = AllAssumptions & AssumptionsActions;
 
 export const useAssumptionsStore = create<AssumptionsStore>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       ...DEFAULT_ASSUMPTIONS,
 
       updateRevenue: (updates) =>
@@ -64,11 +71,62 @@ export const useAssumptionsStore = create<AssumptionsStore>()(
           lastModified: new Date().toISOString(),
         })),
 
+      resetRevenue: () =>
+        set((state) => ({
+          revenue: DEFAULT_ASSUMPTIONS.revenue,
+          lastModified: new Date().toISOString(),
+        })),
+
+      resetCOGS: () =>
+        set((state) => ({
+          cogs: DEFAULT_ASSUMPTIONS.cogs,
+          lastModified: new Date().toISOString(),
+        })),
+
+      resetMarketing: () =>
+        set((state) => ({
+          marketing: DEFAULT_ASSUMPTIONS.marketing,
+          lastModified: new Date().toISOString(),
+        })),
+
+      resetGNA: () =>
+        set((state) => ({
+          gna: DEFAULT_ASSUMPTIONS.gna,
+          lastModified: new Date().toISOString(),
+        })),
+
+      resetCapital: () =>
+        set((state) => ({
+          capital: DEFAULT_ASSUMPTIONS.capital,
+          lastModified: new Date().toISOString(),
+        })),
+
+      resetCorporate: () =>
+        set((state) => ({
+          corporate: DEFAULT_ASSUMPTIONS.corporate,
+          lastModified: new Date().toISOString(),
+        })),
+
       resetToDefaults: () =>
         set({
           ...DEFAULT_ASSUMPTIONS,
           lastModified: new Date().toISOString(),
         }),
+
+      exportAsJSON: () => {
+        const state = get();
+        const exportData = {
+          revenue: state.revenue,
+          cogs: state.cogs,
+          marketing: state.marketing,
+          gna: state.gna,
+          capital: state.capital,
+          corporate: state.corporate,
+          version: state.version,
+          lastModified: state.lastModified,
+        };
+        return JSON.stringify(exportData, null, 2);
+      },
     }),
     {
       name: 'sportsprod-assumptions',

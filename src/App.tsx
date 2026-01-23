@@ -7,6 +7,7 @@ import { Revenue } from './revenue'
 import { Marketing, LaunchPlan, EmailSequences, Campaigns, MarketingAnalytics, ReferralProgram } from './marketing'
 import { Inventory } from './inventory'
 import { Pricing } from './pricing'
+import { Assumptions } from './assumptions'
 import { AuthProvider, ProtectedRoute, LoginPage, RoleSelector, PermissionGate } from './auth'
 
 // Placeholder pages for other routes
@@ -192,6 +193,18 @@ function App() {
               <Layout title="Pricing">
                 <Pricing />
               </Layout>
+            }
+          />
+          <Route
+            path="/assumptions"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:assumptions" fallback={<AccessDenied />}>
+                  <Layout title="Assumptions">
+                    <Assumptions />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
             }
           />
         </Routes>
