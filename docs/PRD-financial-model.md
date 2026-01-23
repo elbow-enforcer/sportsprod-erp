@@ -203,6 +203,46 @@ Sigmoid (S-curve) adoption based on Iron Neck's Google Trends + sales trajectory
 - [ ] Price trend visualization
 - [ ] Best quote alerts
 
+### Module 13: Inventory & Cash Flow Model
+**Purpose:** Model batch ordering, lead times, and working capital requirements
+
+**Key Concepts:**
+- **MOQ (Minimum Order Quantity):** Batch size for manufacturing orders (e.g., 1,000 units)
+- **Lead Time:** Days from order to delivery (e.g., 90 days)
+- **Reorder Point:** Inventory level that triggers new order
+- **Safety Stock:** Buffer inventory based on demand variability
+- **Working Capital:** Cash tied up in inventory
+
+**Calculations:**
+- Daily Sales Rate = Annual Units / 365
+- Days of Inventory = Current Inventory / Daily Sales Rate
+- Reorder Point = (Lead Time × Daily Sales Rate) + Safety Stock
+- Safety Stock = Daily Sales Rate × Safety Days (e.g., 30 days)
+- Working Capital = Inventory Units × Unit Cost
+
+**Cash Flow Impact:**
+- Order placed: -$X (MOQ × Unit Cost)
+- Revenue: +$Y per unit sold (trickles in daily/monthly)
+- Inventory carrying cost: ~2% of inventory value per month
+
+**Example (Base Scenario Year 1):**
+| Event | Day | Cash Impact | Inventory |
+|-------|-----|-------------|-----------|
+| Initial order (1000 units) | 0 | -$200,000 | 0 |
+| Units arrive | 90 | $0 | 1,000 |
+| Sales (0.55/day) | 90-270 | +$99K | 901→100 |
+| Reorder trigger | 270 | -$200,000 | 100 |
+| Units arrive | 360 | $0 | 1,100 |
+
+**Requirements:**
+- [ ] MOQ configuration per product
+- [ ] Lead time configuration
+- [ ] Reorder point calculator
+- [ ] Safety stock calculator based on scenario variance
+- [ ] Inventory level projections over time
+- [ ] Cash flow timeline visualization
+- [ ] Working capital requirements by scenario
+
 ---
 
 ## Technical Architecture
