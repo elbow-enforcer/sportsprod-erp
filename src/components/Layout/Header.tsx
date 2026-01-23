@@ -1,27 +1,21 @@
-import { useScenarioStore } from '../../stores/scenarioStore'
+import { useScenarioStore } from '../../stores/scenarioStore';
 
-interface HeaderProps {
-  title: string
-}
-
-export function Header({ title }: HeaderProps) {
-  const { scenarios, selectedScenarioId, selectScenario } = useScenarioStore()
+export function Header() {
+  const { scenarios, selectedScenarioId, selectScenario } = useScenarioStore();
+  const selectedScenario = scenarios.find(s => s.id === selectedScenarioId);
 
   return (
-    <header className="h-16 bg-white border-b border-gray-200 px-6 flex items-center justify-between">
-      <h1 className="text-xl font-semibold text-gray-900">{title}</h1>
-
+    <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6">
+      <h1 className="text-xl font-semibold text-gray-800">Dashboard</h1>
+      
       <div className="flex items-center gap-4">
-        {/* Scenario Selector */}
         <div className="flex items-center gap-2">
-          <label htmlFor="scenario" className="text-sm text-gray-500">
-            Scenario:
-          </label>
+          <span className="text-sm text-gray-500">Scenario:</span>
           <select
-            id="scenario"
-            value={selectedScenarioId || ''}
+            value={selectedScenarioId}
             onChange={(e) => selectScenario(e.target.value)}
-            className="px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            title={selectedScenario?.description}
           >
             {scenarios.map((scenario) => (
               <option key={scenario.id} value={scenario.id}>
@@ -30,17 +24,14 @@ export function Header({ title }: HeaderProps) {
             ))}
           </select>
         </div>
-
-        {/* User Menu (placeholder) */}
-        <div className="flex items-center gap-2 pl-4 border-l border-gray-200">
-          <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-sm font-medium text-gray-600">
-            U
+        
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+            <span className="text-blue-600 font-medium text-sm">U</span>
           </div>
-          <span className="text-sm font-medium text-gray-700 hidden sm:block">
-            User
-          </span>
+          <span className="text-sm text-gray-600">User</span>
         </div>
       </div>
     </header>
-  )
+  );
 }
