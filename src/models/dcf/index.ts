@@ -81,6 +81,22 @@ export {
   getValuationSummary,
 } from './calculator';
 
+// FCF Projections exports
+export {
+  projectFCFByScenario,
+  projectFCFAllScenarios,
+  getFCFComponentBreakdown,
+  formatFCFCurrency,
+  formatFCFPercent,
+} from './fcfProjections';
+
+export type {
+  FCFYearComponents,
+  FCFProjectionResult,
+  FCFScenarioComparison,
+  FCFComponentBreakdown,
+} from './fcfProjections';
+
 // Re-export types namespace for convenience
 import * as types from './types';
 export { types };
