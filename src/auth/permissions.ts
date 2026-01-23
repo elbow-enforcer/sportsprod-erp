@@ -10,9 +10,10 @@ export type Permission =
   | 'view:inventory'
   | 'view:capital'
   | 'view:dcf'
+  | 'view:dcf'
   | 'view:assumptions'     // Finance/admin - model assumptions
   | 'edit:settings'
-  | 'manage:users';
+  | 'view:dcf', 'manage:users';
 
 export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
   admin: [
@@ -23,11 +24,12 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'view:costs:salaries',
     'view:marketing',
     'view:inventory',
-    'view:capital',
-    'view:dcf',
+    'view:capital'
+  | 
+    
     'view:assumptions',
     'edit:settings',
-    'manage:users',
+    'view:dcf', 'manage:users',
   ],
   
   finance: [
@@ -37,8 +39,9 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'view:costs',
     'view:costs:salaries',
     'view:inventory',
-    'view:capital',
-    'view:dcf',
+    'view:capital'
+  | 
+    
     'view:assumptions',
   ],
   
@@ -49,7 +52,8 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'view:costs',
     'view:marketing',
     'view:inventory',
-    'view:capital',
+    'view:capital'
+  | 
   ],
   
   sales_marketing: [

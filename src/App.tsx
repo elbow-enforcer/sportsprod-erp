@@ -8,6 +8,7 @@ import { Marketing, LaunchPlan, EmailSequences, Campaigns, MarketingAnalytics, R
 import { Inventory } from './inventory'
 import { Pricing } from './pricing'
 import { Assumptions } from './assumptions'
+import { Valuation } from './valuation'
 import { AuthProvider, ProtectedRoute, LoginPage, RoleSelector, PermissionGate } from './auth'
 
 // Placeholder pages for other routes
@@ -116,6 +117,30 @@ function App() {
             }
           />
           <Route
+            path="/valuation"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:dcf" fallback={<AccessDenied />}>
+                  <Layout title="DCF Valuation">
+                    <Valuation />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/assumptions"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:dcf" fallback={<AccessDenied />}>
+                  <Layout title="Assumptions">
+                    <Assumptions />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/marketing"
             element={
               <ProtectedRoute>
@@ -193,18 +218,6 @@ function App() {
               <Layout title="Pricing">
                 <Pricing />
               </Layout>
-            }
-          />
-          <Route
-            path="/assumptions"
-            element={
-              <ProtectedRoute>
-                <PermissionGate permission="view:assumptions" fallback={<AccessDenied />}>
-                  <Layout title="Assumptions">
-                    <Assumptions />
-                  </Layout>
-                </PermissionGate>
-              </ProtectedRoute>
             }
           />
         </Routes>
