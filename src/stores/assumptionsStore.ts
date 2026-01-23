@@ -177,6 +177,10 @@ export const useAssumptionsStore = create<AssumptionsStore>()(
         rows.push(`Capital,Working Capital %,${(state.capital.workingCapitalPercent * 100).toFixed(1)}%`);
         rows.push(`Capital,CapEx Year 1,$${state.capital.capexYear1}`);
         rows.push(`Capital,CapEx Growth Rate,${(state.capital.capexGrowthRate * 100).toFixed(1)}%`);
+        rows.push(`Capital,Startup Year,${state.capital.startupYear || 2024}`);
+        rows.push(`Capital,Startup Expenses,$${state.capital.startupExpenses || 150000}`);
+        rows.push(`Capital,Investor Capital,$${state.capital.investorCapital || 250000}`);
+        rows.push(`Capital,First Mfg Order,$${state.capital.firstManufacturingOrder || 200000}`);
         
         // Corporate
         rows.push(`Corporate,Entity Type,${state.corporate.entityType}`);

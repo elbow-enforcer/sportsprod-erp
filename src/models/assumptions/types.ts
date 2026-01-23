@@ -30,6 +30,12 @@ export interface CapitalAssumptions {
   workingCapitalPercent: number; // Default 10% of revenue
   capexYear1: number;            // Default $50,000
   capexGrowthRate: number;       // Default 10%
+  
+  // Historical/Startup Capital (Year 0 - 2024)
+  startupYear: number;           // Default 2024 (Year 0)
+  startupExpenses: number;       // Pre-revenue startup costs (~$150k)
+  investorCapital: number;       // Total investor capital raised ($200-300k)
+  firstManufacturingOrder: number; // Initial inventory purchase ($200k)
 }
 
 export type EntityType = 'c_corp' | 's_corp' | 'llc' | 'partnership' | 'sole_prop';

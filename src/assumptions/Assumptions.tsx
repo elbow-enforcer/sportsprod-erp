@@ -67,6 +67,11 @@ const capitalFields: FieldConfig[] = [
   { key: 'workingCapitalPercent', label: 'Working Capital %', tooltip: 'Working capital as percentage of revenue', type: 'percent', min: 0, max: 1, step: 0.01 },
   { key: 'capexYear1', label: 'Year 1 CapEx', tooltip: 'Capital expenditure in first year', type: 'currency', min: 0 },
   { key: 'capexGrowthRate', label: 'CapEx Growth Rate', tooltip: 'Annual growth rate for capital expenditure', type: 'percent', min: 0, max: 1, step: 0.01 },
+  // Historical/Startup Capital (Year 0)
+  { key: 'startupYear', label: 'Startup Year', tooltip: 'Year 0 - Pre-revenue startup period', type: 'number', min: 2020, max: 2030, step: 1 },
+  { key: 'startupExpenses', label: 'Startup Expenses', tooltip: 'Pre-revenue startup costs (legal, R&D, prototyping)', type: 'currency', min: 0 },
+  { key: 'investorCapital', label: 'Investor Capital', tooltip: 'Total capital raised from investors', type: 'currency', min: 0 },
+  { key: 'firstManufacturingOrder', label: 'First Mfg Order', tooltip: 'Initial inventory/manufacturing purchase', type: 'currency', min: 0 },
 ];
 
 const corporateFields: FieldConfig[] = [

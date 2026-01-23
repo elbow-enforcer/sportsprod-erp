@@ -41,6 +41,12 @@ export const DEFAULT_CAPITAL: CapitalAssumptions = {
   workingCapitalPercent: 0.10,
   capexYear1: 50000,
   capexGrowthRate: 0.10,
+  
+  // Historical/Startup Capital (Year 0 - 2024)
+  startupYear: 2024,
+  startupExpenses: 150000,       // Pre-revenue startup costs
+  investorCapital: 250000,       // Total investor capital raised
+  firstManufacturingOrder: 200000, // Initial inventory purchase
 };
 
 export const DEFAULT_CORPORATE: CorporateAssumptions = {
