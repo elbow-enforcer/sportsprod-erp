@@ -17,20 +17,13 @@ const navItems: NavItem[] = [
 ]
 
 const valuationItems: NavItem[] = [
-  { path: '/valuation/summary', label: 'Summary', icon: '📋', permission: 'view:dcf' },
   { path: '/valuation', label: 'DCF Valuation', icon: '📉', permission: 'view:dcf' },
   { path: '/assumptions', label: 'Assumptions', icon: '⚙️', permission: 'view:dcf' },
-]
-
-const financialsItems: NavItem[] = [
-  { path: '/financials/income-statement', label: 'Income Statement', icon: '📄', permission: 'view:projections' },
-  { path: '/financials/balance-sheet', label: 'Balance Sheet', icon: '⚖️', permission: 'view:projections' },
-  { path: '/financials/cash-flow', label: 'Cash Flow', icon: '💵', permission: 'view:projections' },
+  { path: '/investors', label: 'Investor Cohorts', icon: '👥', permission: 'view:dcf' },
 ]
 
 const capitalItems: NavItem[] = [
-  { path: '/capital', label: 'Cap Table', icon: '🏦', permission: 'view:capital' },
-  { path: '/investors', label: 'Investor Cohorts', icon: '👥', permission: 'view:dcf' },
+  { path: '/capital', label: 'Capital', icon: '🏦', permission: 'view:capital' },
   { path: '/inventory', label: 'Inventory', icon: '📦', permission: 'view:inventory' },
 ]
 
@@ -50,6 +43,13 @@ const marketingItems: NavItem[] = [
   { path: '/marketing/playbook', label: 'Video Playbook', icon: '📹', permission: 'view:marketing' },
   { path: '/marketing/ideas', label: 'Video Ideas', icon: '💡', permission: 'view:marketing' },
   { path: '/marketing/brief', label: 'Video Brief', icon: '📝', permission: 'view:marketing' },
+]
+
+const salesItems: NavItem[] = [
+  { path: '/sales/customers', label: 'Customers', icon: '👤', permission: 'view:sales' },
+  { path: '/sales/quotes', label: 'Quotes', icon: '📋', permission: 'view:sales' },
+  { path: '/sales/orders', label: 'Sales Orders', icon: '🛒', permission: 'view:sales' },
+  { path: '/sales/fulfillment', label: 'Fulfillment', icon: '📦', permission: 'view:sales' },
 ]
 
 function NavItemLink({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
@@ -128,11 +128,6 @@ export function Sidebar() {
           <NavItemLink key={item.path} item={item} collapsed={collapsed} />
         ))}
         
-        <SectionHeader label="Financials" collapsed={collapsed} />
-        {financialsItems.map((item) => (
-          <NavItemLink key={item.path} item={item} collapsed={collapsed} />
-        ))}
-        
         <SectionHeader label="Capital" collapsed={collapsed} />
         {capitalItems.map((item) => (
           <NavItemLink key={item.path} item={item} collapsed={collapsed} />
@@ -145,6 +140,11 @@ export function Sidebar() {
         
         <SectionHeader label="Marketing" collapsed={collapsed} />
         {marketingItems.map((item) => (
+          <NavItemLink key={item.path} item={item} collapsed={collapsed} />
+        ))}
+        
+        <SectionHeader label="Sales & Orders" collapsed={collapsed} />
+        {salesItems.map((item) => (
           <NavItemLink key={item.path} item={item} collapsed={collapsed} />
         ))}
       </nav>
