@@ -1,27 +1,27 @@
 /**
- * SeasonalityToggle - Toggle control for enabling/disabling seasonality adjustments
+ * SeasonalityToggle - Simple toggle for enabling/disabling seasonality
+ * Issue #15
  */
 
 import { useSeasonalityStore } from '../stores/seasonalityStore';
-import type { SeasonalityPreset } from '../models/seasonality';
 
 interface SeasonalityToggleProps {
   showPresets?: boolean;
   compact?: boolean;
 }
 
-export function SeasonalityToggle({ showPresets = true, compact = false }: SeasonalityToggleProps) {
-  const { enabled, presetId, toggleSeasonality, applyPreset, getValidationStatus, getAdjustmentFactor } =
-    useSeasonalityStore();
+export function SeasonalityToggle({ showPresets = false, compact = false }: SeasonalityToggleProps) {
+  const { 
+    enabled, 
+    presetId, 
+    toggleSeasonality, 
+    applyPreset, 
+    getValidationStatus, 
+    getAdjustmentFactor 
+  } = useSeasonalityStore();
 
   const validation = getValidationStatus();
   const adjustmentFactor = getAdjustmentFactor();
-
-  const presets: { id: SeasonalityPreset; label: string; description: string }[] = [
-    { id: 'sports-retail', label: 'Sports Retail', description: 'Holiday + summer peaks' },
-    { id: 'flat', label: 'Flat', description: 'No seasonality' },
-    { id: 'custom', label: 'Custom', description: 'User-defined' },
-  ];
 
   if (compact) {
     return (
@@ -74,45 +74,41 @@ export function SeasonalityToggle({ showPresets = true, compact = false }: Seaso
       </div>
 
       {enabled && (
-        <>
-          {/* Status badge */}
-          <div className="mb-4 flex items-center gap-3">
-            <span
-              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                validation.valid
-                  ? 'bg-green-100 text-green-800'
-                  : 'bg-yellow-100 text-yellow-800'
+        <div className="mb-4 flex items-center gap-3">
+          <span
+            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+              validation.valid
+                ? 'bg-green-100 text-green-800'
+                : 'bg-yellow-100 text-yellow-800'
+            }`}
+          >
+            Avg: {(adjustmentFactor * 100).toFixed(0)}%
+          </span>
+          {!validation.valid && (
+            <span className="text-xs text-yellow-600">
+              ⚠️ Average differs from 100% — annual totals will shift
+            </span>
+          )}
+        </div>
+      )}
+
+      {enabled && showPresets && (
+        <div className="flex gap-2 flex-wrap">
+          {(['sports-retail', 'flat', 'custom'] as const).map((preset) => (
+            <button
+              key={preset}
+              onClick={() => applyPreset(preset)}
+              className={`px-3 py-2 text-sm rounded-lg border transition-colors ${
+                presetId === preset
+                  ? 'bg-blue-50 border-blue-300 text-blue-700'
+                  : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
               }`}
             >
-              Avg: {(adjustmentFactor * 100).toFixed(0)}%
-            </span>
-            {!validation.valid && (
-              <span className="text-xs text-yellow-600">
-                ⚠️ Average differs from 100% — annual totals will shift
-              </span>
-            )}
-          </div>
-
-          {/* Preset selector */}
-          {showPresets && (
-            <div className="flex gap-2 flex-wrap">
-              {presets.map((preset) => (
-                <button
-                  key={preset.id}
-                  onClick={() => applyPreset(preset.id)}
-                  className={`px-3 py-2 text-sm rounded-lg border transition-colors ${
-                    presetId === preset.id
-                      ? 'bg-blue-50 border-blue-300 text-blue-700'
-                      : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
-                  }`}
-                >
-                  <span className="font-medium">{preset.label}</span>
-                  <span className="block text-xs text-gray-500">{preset.description}</span>
-                </button>
-              ))}
-            </div>
-          )}
-        </>
+              {preset === 'sports-retail' ? 'Sports Retail' : 
+               preset === 'flat' ? 'Flat' : 'Custom'}
+            </button>
+          ))}
+        </div>
       )}
 
       {!enabled && (
