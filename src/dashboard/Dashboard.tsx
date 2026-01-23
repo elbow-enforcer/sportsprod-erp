@@ -1,9 +1,33 @@
 import { KPICard } from '../components/KPICard'
+import { CostBreakdownChart } from '../components/charts/CostBreakdownChart'
+import { RevenueChart } from '../components/charts/RevenueChart'
 import { useScenarioStore } from '../stores/scenarioStore'
+import { getAnnualProjections } from '../models/adoption'
 
 export function Dashboard() {
   const { selectedScenarioId, scenarios } = useScenarioStore()
   const selectedScenario = scenarios.find((s) => s.id === selectedScenarioId)
+
+  // Get Year 1 adoption data from the model
+  const year1Units = getAnnualProjections(selectedScenarioId, 2025, 1)[0]
+  const year1Revenue = year1Units * 1000
+
+  // Format values for display
+  const formatCurrency = (value: number): string => {
+    if (value >= 1_000_000) {
+      return `$${(value / 1_000_000).toFixed(1)}M`
+    } else if (value >= 1_000) {
+      return `$${(value / 1_000).toFixed(0)}K`
+    }
+    return `$${value.toFixed(0)}`
+  }
+
+  const formatUnits = (value: number): string => {
+    if (value >= 1_000) {
+      return `${(value / 1_000).toFixed(1)}K`
+    }
+    return value.toFixed(0)
+  }
 
   return (
     <div className="space-y-6">
@@ -20,18 +44,18 @@ export function Dashboard() {
       {/* KPI Cards Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <KPICard
-          title="Revenue"
-          value="$1.2M"
+          title="Year 1 Revenue"
+          value={formatCurrency(year1Revenue)}
           trend={{ value: 12.5, isPositive: true }}
           icon={<span className="text-2xl">💰</span>}
-          subtitle="Monthly recurring"
+          subtitle="Projected annual"
         />
         <KPICard
-          title="Units Sold"
-          value="8,420"
+          title="Year 1 Units"
+          value={formatUnits(year1Units)}
           trend={{ value: 8.3, isPositive: true }}
           icon={<span className="text-2xl">📦</span>}
-          subtitle="This month"
+          subtitle="Projected annual"
         />
         <KPICard
           title="Burn Rate"
@@ -49,14 +73,14 @@ export function Dashboard() {
         />
       </div>
 
-      {/* Charts Section (Placeholder) */}
+      {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
             Revenue Trend
           </h3>
-          <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
-            <p className="text-gray-400">📈 Revenue chart placeholder</p>
+          <div className="h-64">
+            <RevenueChart selectedScenario={selectedScenarioId} />
           </div>
         </div>
 
@@ -64,8 +88,8 @@ export function Dashboard() {
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
             Cost Breakdown
           </h3>
-          <div className="h-64 flex items-center justify-center bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
-            <p className="text-gray-400">🥧 Cost pie chart placeholder</p>
+          <div className="h-64">
+            <CostBreakdownChart />
           </div>
         </div>
       </div>
