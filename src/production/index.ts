@@ -55,3 +55,6 @@ export {
   generateHistoricalProductionData,
   getProductionByProduct,
 } from './mockData';
+
+// Components
+export { BOMList } from './BOMList';
