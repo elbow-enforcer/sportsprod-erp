@@ -1,6 +1,7 @@
 import type {
   AllAssumptions,
   RevenueAssumptions,
+  DiscountTiers,
   COGSAssumptions,
   MarketingAssumptions,
   GNAAssumptions,
@@ -9,11 +10,19 @@ import type {
   ExitAssumptions,
 } from './types';
 
+export const DEFAULT_DISCOUNT_TIERS: DiscountTiers = {
+  individual: 0,
+  pt: 0.075,
+  doctor: 0.125,
+  wholesaler: 0.20,
+};
+
 export const DEFAULT_REVENUE: RevenueAssumptions = {
   basePrice: 1000,
   pricePerUnit: 1000,
   annualPriceIncrease: 0,
   discountRate: 0.05,
+  discountTiers: DEFAULT_DISCOUNT_TIERS,
 };
 
 export const DEFAULT_COGS: COGSAssumptions = {
