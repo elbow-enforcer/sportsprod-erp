@@ -10,6 +10,7 @@ export type Permission =
   | 'view:inventory'
   | 'view:capital'
   | 'view:dcf'
+  | 'view:fpa'
   | 'edit:settings'
   | 'manage:users';
 
@@ -24,6 +25,7 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'view:inventory',
     'view:capital',
     'view:dcf',
+    'view:fpa',
     'edit:settings',
     'manage:users',
   ],
@@ -37,6 +39,7 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'view:inventory',
     'view:capital',
     'view:dcf',
+    'view:fpa',
   ],
   
   management: [
