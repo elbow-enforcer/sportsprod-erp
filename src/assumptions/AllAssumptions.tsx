@@ -6,6 +6,7 @@
 import { useState } from 'react';
 import { useAssumptionsStore } from '../stores/assumptionsStore';
 import { useScenarioManagementStore } from '../stores/scenarioManagementStore';
+import { AssumptionTimeline } from './AssumptionTimeline';
 
 const formatCurrency = (value: number) => `$${value.toLocaleString()}`;
 const formatPercent = (value: number) => `${(value * 100).toFixed(1)}%`;
@@ -528,6 +529,11 @@ export function AllAssumptions() {
             />
           </div>
         </Section>
+      </div>
+
+      {/* Version History Timeline */}
+      <div className="print:hidden">
+        <AssumptionTimeline />
       </div>
 
       {/* Summary Table for Print */}
