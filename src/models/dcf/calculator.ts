@@ -356,6 +356,95 @@ export function calculateNPVWithEffectiveDate(
 }
 
 /**
+ * Calculate IRR relative to a specific reference date (e.g., cohort investment date)
+ * 
+ * This allows computing IRR from the perspective of a specific investor cohort,
+ * where their investment date becomes "time zero" for the IRR calculation.
+ * 
+ * @param cashFlows - Array of cash flows (index = period from model start)
+ * @param modelStartDate - Date when model period 0 begins
+ * @param cohortInvestmentDate - Date when the cohort invested (becomes t=0 for IRR)
+ * @param cohortInvestmentAmount - Initial investment amount by the cohort
+ * @returns IRR as decimal, or null if calculation fails
+ */
+export function calculateIRRRelativeToCohort(
+  cashFlows: number[],
+  modelStartDate: Date,
+  cohortInvestmentDate: Date,
+  cohortInvestmentAmount: number
+): number | null {
+  const msPerYear = 365.25 * 24 * 60 * 60 * 1000;
+  
+  // Calculate years offset from cohort investment to model start
+  const yearsFromCohortToModelStart = 
+    (modelStartDate.getTime() - cohortInvestmentDate.getTime()) / msPerYear;
+  
+  // Build cash flow array relative to cohort investment date
+  // Period 0 = cohort investment (negative)
+  const adjustedCashFlows: number[] = [-cohortInvestmentAmount];
+  
+  // Add model cash flows with adjusted timing
+  for (let t = 0; t < cashFlows.length; t++) {
+    const yearsFromCohort = yearsFromCohortToModelStart + t;
+    if (yearsFromCohort > 0) {
+      // Extend array if needed
+      const period = Math.ceil(yearsFromCohort);
+      while (adjustedCashFlows.length <= period) {
+        adjustedCashFlows.push(0);
+      }
+      // Allocate cash flow to appropriate period (simplified: use floor)
+      adjustedCashFlows[period] += cashFlows[t];
+    }
+  }
+  
+  try {
+    const irr = calculateIRRSimple(adjustedCashFlows);
+    return isFinite(irr) ? irr : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Calculate IRR and NPV for a DCF result as of a specific effective date
+ * 
+ * @param dcfResult - The DCF result containing projections
+ * @param effectiveDate - Date to calculate metrics as of
+ * @param modelStartDate - Date when projections begin
+ * @param discountRate - Discount rate for NPV calculation
+ * @returns Object with adjusted IRR and NPV values
+ */
+export function calculateMetricsAtEffectiveDate(
+  cashFlows: number[],
+  effectiveDate: Date,
+  modelStartDate: Date,
+  discountRate: number,
+  terminalValue: number = 0
+): {
+  npv: number;
+  adjustedCashFlows: number[];
+  yearsOffset: number;
+} {
+  const msPerYear = 365.25 * 24 * 60 * 60 * 1000;
+  const yearsOffset = (effectiveDate.getTime() - modelStartDate.getTime()) / msPerYear;
+  
+  // Add terminal value to last period cash flow
+  const adjustedCashFlows = [...cashFlows];
+  if (terminalValue > 0 && adjustedCashFlows.length > 0) {
+    adjustedCashFlows[adjustedCashFlows.length - 1] += terminalValue;
+  }
+  
+  // Calculate NPV as of effective date
+  let npv = 0;
+  for (let t = 0; t < adjustedCashFlows.length; t++) {
+    const adjustedPeriod = t - yearsOffset;
+    npv += adjustedCashFlows[t] / Math.pow(1 + discountRate, adjustedPeriod);
+  }
+  
+  return { npv, adjustedCashFlows, yearsOffset };
+}
+
+/**
  * Calculate payback period (time to recover initial investment)
  * 
  * @param cashFlows - Array of cash flows (index 0 = initial investment, typically negative)

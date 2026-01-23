@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ComposedChart,
@@ -14,6 +14,7 @@ import {
 import { KPICard } from '../components/KPICard';
 import { useAssumptionsStore } from '../stores/assumptionsStore';
 import { useScenarioStore } from '../stores/scenarioStore';
+import { useInvestorCohortsStore } from '../stores/investorCohortsStore';
 import { getAnnualProjections } from '../models/adoption';
 import {
   calculateFCF,
@@ -21,6 +22,8 @@ import {
   calculateTerminalValue,
   calculateIRRSimple,
   calculatePaybackPeriod,
+  calculateNPVWithEffectiveDate,
+  calculateIRRRelativeToCohort,
   type DCFValuation,
 } from '../models/dcf';
 
@@ -531,9 +534,18 @@ function KeyAssumptions({
   );
 }
 
+// Effective Date Preset type
+interface DatePreset {
+  id: string;
+  label: string;
+  date: string;
+  type: 'formation' | 'cohort' | 'custom';
+}
+
 export function Valuation() {
   const { selectedScenarioId, scenarios } = useScenarioStore();
   const selectedScenario = scenarios.find((s) => s.id === selectedScenarioId);
+  const { cohorts } = useInvestorCohortsStore();
   
   // Get assumptions from store
   const revenue = useAssumptionsStore((state) => state.revenue);
@@ -541,6 +553,37 @@ export function Valuation() {
   const marketing = useAssumptionsStore((state) => state.marketing);
   const capital = useAssumptionsStore((state) => state.capital);
   const corporate = useAssumptionsStore((state) => state.corporate);
+  
+  // Effective date state
+  const [effectiveDate, setEffectiveDate] = useState(
+    corporate.effectiveDate || new Date().toISOString().split('T')[0]
+  );
+  const [selectedPresetId, setSelectedPresetId] = useState<string>('today');
+
+  // Generate date presets
+  const datePresets: DatePreset[] = useMemo(() => {
+    const presets: DatePreset[] = [
+      { id: 'today', label: 'Today', date: new Date().toISOString().split('T')[0], type: 'custom' },
+      { 
+        id: 'formation', 
+        label: 'C-Corp Formation', 
+        date: corporate.investmentLockInDate || '2024-01-01',
+        type: 'formation'
+      },
+    ];
+
+    // Add cohort investment dates
+    cohorts.forEach((cohort) => {
+      presets.push({
+        id: cohort.id,
+        label: cohort.name,
+        date: cohort.investmentDate,
+        type: 'cohort',
+      });
+    });
+
+    return presets;
+  }, [cohorts, corporate.investmentLockInDate]);
   
   // Calculate DCF valuation
   const valuation = useMemo(() => {
@@ -615,6 +658,48 @@ export function Valuation() {
     }
     return null; // Never pays back
   }, [valuation, cashFlowsForIRR]);
+
+  // Calculate NPV at effective date
+  const npvAtEffectiveDate = useMemo(() => {
+    const modelStartDate = new Date(corporate.investmentLockInDate || '2024-01-01');
+    const effDate = new Date(effectiveDate);
+    return calculateNPVWithEffectiveDate(
+      cashFlowsForIRR,
+      corporate.discountRate,
+      effDate,
+      modelStartDate
+    );
+  }, [cashFlowsForIRR, effectiveDate, corporate.discountRate, corporate.investmentLockInDate]);
+
+  // Calculate cohort-specific IRRs
+  const cohortIRRs = useMemo(() => {
+    const modelStartDate = new Date(corporate.investmentLockInDate || '2024-01-01');
+    const fcfs = valuation.yearlyData.map(y => y.fcf);
+    // Add terminal value to last FCF
+    if (fcfs.length > 0) {
+      fcfs[fcfs.length - 1] += valuation.terminalValue;
+    }
+    
+    return cohorts.map(cohort => {
+      const cohortDate = new Date(cohort.investmentDate);
+      const cohortIRR = calculateIRRRelativeToCohort(
+        fcfs,
+        modelStartDate,
+        cohortDate,
+        cohort.investmentAmount
+      );
+      return {
+        cohortId: cohort.id,
+        cohortName: cohort.name,
+        investmentDate: cohort.investmentDate,
+        investmentAmount: cohort.investmentAmount,
+        irr: cohortIRR,
+      };
+    });
+  }, [cohorts, valuation, corporate.investmentLockInDate]);
+
+  // Find selected preset info
+  const selectedPreset = datePresets.find(p => p.id === selectedPresetId);
   
   return (
     <div className="space-y-6">
@@ -628,6 +713,59 @@ export function Valuation() {
         </div>
       )}
 
+      {/* Effective Date Selector */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+              <span>📅</span> Effective Date for Analysis
+            </h3>
+            <p className="text-sm text-gray-500 mt-1">
+              All valuation metrics are calculated as of this date
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <select
+              value={selectedPresetId}
+              onChange={(e) => {
+                setSelectedPresetId(e.target.value);
+                const preset = datePresets.find(p => p.id === e.target.value);
+                if (preset) {
+                  setEffectiveDate(preset.date);
+                }
+              }}
+              className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              {datePresets.map((preset) => (
+                <option key={preset.id} value={preset.id}>
+                  {preset.label} ({preset.date})
+                </option>
+              ))}
+              <option value="custom">Custom Date...</option>
+            </select>
+            <input
+              type="date"
+              value={effectiveDate}
+              onChange={(e) => {
+                setEffectiveDate(e.target.value);
+                setSelectedPresetId('custom');
+              }}
+              className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+        </div>
+        {selectedPreset && selectedPreset.type !== 'custom' && (
+          <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+            <p className="text-sm text-blue-800">
+              <span className="font-medium">
+                {selectedPreset.type === 'formation' ? '🏛️ Formation Date:' : '💰 Cohort Investment:'}
+              </span>{' '}
+              NPV and metrics calculated relative to {selectedPreset.label} ({selectedPreset.date})
+            </p>
+          </div>
+        )}
+      </div>
+
       {/* Valuation Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
         <KPICard
@@ -635,6 +773,12 @@ export function Valuation() {
           value={formatCurrency(valuation.enterpriseValue)}
           icon={<span className="text-2xl">💎</span>}
           subtitle="DCF Valuation"
+        />
+        <KPICard
+          title="NPV @ Effective Date"
+          value={formatCurrency(npvAtEffectiveDate)}
+          icon={<span className="text-2xl">📆</span>}
+          subtitle={`As of ${effectiveDate}`}
         />
         <KPICard
           title="IRR"
@@ -649,15 +793,9 @@ export function Valuation() {
           subtitle="Time to Recover Investment"
         />
         <KPICard
-          title="EV / Revenue"
-          value={`${evRevenueMultiple.toFixed(1)}x`}
-          icon={<span className="text-2xl">📊</span>}
-          subtitle={`Year ${corporate.projectionYears} Revenue`}
-        />
-        <KPICard
           title="EV / EBITDA"
           value={`${evEbitdaMultiple.toFixed(1)}x`}
-          icon={<span className="text-2xl">📈</span>}
+          icon={<span className="text-2xl">📊</span>}
           subtitle={`Year ${corporate.projectionYears} EBITDA`}
         />
         <KPICard
@@ -667,6 +805,83 @@ export function Valuation() {
           subtitle="Of Enterprise Value"
         />
       </div>
+
+      {/* Cohort-Specific IRR Analysis */}
+      {cohortIRRs.length > 0 && (
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+              <span>👥</span> Investor Cohort IRR Analysis
+            </h3>
+            <Link
+              to="/investors"
+              className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1"
+            >
+              Manage Cohorts →
+            </Link>
+          </div>
+          <p className="text-sm text-gray-500 mb-4">
+            IRR calculated relative to each cohort's investment date
+          </p>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead>
+                <tr className="bg-gray-50">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Cohort
+                  </th>
+                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Investment Date
+                  </th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Investment Amount
+                  </th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    IRR
+                  </th>
+                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    vs WACC ({formatPercent(corporate.discountRate)})
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-100">
+                {cohortIRRs.map((cohort) => {
+                  const aboveWacc = cohort.irr !== null && cohort.irr > corporate.discountRate;
+                  return (
+                    <tr key={cohort.cohortId} className="hover:bg-gray-50">
+                      <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                        {cohort.cohortName}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-600 text-center">
+                        {cohort.investmentDate}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-600 text-right">
+                        {formatCurrency(cohort.investmentAmount)}
+                      </td>
+                      <td className={`px-4 py-3 text-sm font-semibold text-right ${
+                        cohort.irr !== null && cohort.irr >= 0 ? 'text-green-600' : 'text-red-600'
+                      }`}>
+                        {cohort.irr !== null ? formatPercent(cohort.irr) : 'N/A'}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-center">
+                        {cohort.irr !== null ? (
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                            aboveWacc 
+                              ? 'bg-green-100 text-green-800' 
+                              : 'bg-yellow-100 text-yellow-800'
+                          }`}>
+                            {aboveWacc ? '✓ Above' : '↓ Below'}
+                          </span>
+                        ) : '—'}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {/* Value Bridge */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">

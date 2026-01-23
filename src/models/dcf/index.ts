@@ -65,6 +65,8 @@ export {
   calculateAllScenarios,
   calculateIRRSimple,
   calculateNPVWithEffectiveDate,
+  calculateIRRRelativeToCohort,
+  calculateMetricsAtEffectiveDate,
   calculatePaybackPeriod,
   calculateDiscountedPaybackPeriod,
   formatCurrency,
