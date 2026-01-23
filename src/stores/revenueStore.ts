@@ -9,6 +9,7 @@ import {
   discountRates,
   projectRevenue,
 } from '../models/revenue';
+import { useSeasonalityStore } from './seasonalityStore';
 
 interface RevenueState {
   // Pricing
@@ -32,6 +33,7 @@ interface RevenueState {
   getAverageDiscount: () => number;
   getProjectedRevenue: () => number[];
   getTotalRevenue: () => number;
+  getMonthlyProjections: (yearIndex: number) => number[];
 }
 
 export const useRevenueStore = create<RevenueState>((set, get) => ({
@@ -74,5 +76,12 @@ export const useRevenueStore = create<RevenueState>((set, get) => ({
   getTotalRevenue: () => {
     const projections = get().getProjectedRevenue();
     return projections.reduce((sum, rev) => sum + rev, 0);
+  },
+  
+  // Computed: monthly projection for a year with seasonality applied
+  getMonthlyProjections: (yearIndex: number) => {
+    const annual = get().getProjectedRevenue()[yearIndex] ?? 0;
+    const { distributeRevenue } = useSeasonalityStore.getState();
+    return distributeRevenue(annual);
   },
 }));
