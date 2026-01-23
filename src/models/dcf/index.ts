@@ -21,6 +21,9 @@ export type {
   TerminalValueInputs,
   TerminalValueResult,
   DCFValuation,
+  ComparableCompany,
+  TerminalValueComparison,
+  TerminalValueBreakdown,
 } from './types';
 
 // Calculator type exports
@@ -57,6 +60,11 @@ export {
   calculateExitMultipleTV,
   calculateImpliedMultiple,
   calculateImpliedGrowthRate,
+  compareTerminalValueMethods,
+  getTerminalValueBreakdown,
+  getComparableCompanies,
+  getComparableMultipleStats,
+  COMPARABLE_COMPANIES,
 } from './terminal';
 
 // DCF Calculator exports

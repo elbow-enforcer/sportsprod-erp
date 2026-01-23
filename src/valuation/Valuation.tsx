@@ -25,7 +25,9 @@ import {
   calculateNPVWithEffectiveDate,
   calculateIRRRelativeToCohort,
   type DCFValuation,
+  type TerminalValueMethod,
 } from '../models/dcf';
+import { TerminalValueBreakdown } from './TerminalValueBreakdown';
 
 // Format currency values for display
 const formatCurrency = (value: number): string => {
@@ -75,8 +77,10 @@ function calculateDCFValuation(
   marketingPctRevenue: number,
   workingCapitalPct: number,
   capexYear1: number,
-  capexGrowthRate: number
-): DCFValuation & { yearlyData: YearlyProjection[] } {
+  capexGrowthRate: number,
+  terminalValueMethod: TerminalValueMethod = 'gordon-growth',
+  exitMultiple: number = 8
+): DCFValuation & { yearlyData: YearlyProjection[]; finalYearEBITDA: number } {
   const baseYear = 2025;
   
   // Get unit projections for each year
@@ -146,16 +150,24 @@ function calculateDCFValuation(
     }
   });
   
-  // Calculate Terminal Value using Gordon Growth
+  // Calculate Terminal Value using selected method
   const finalYearFCF = fcfValues[fcfValues.length - 1] || 0;
+  const finalYearEBITDA = yearlyData[yearlyData.length - 1]?.ebitda || 0;
   
   const tvResult = calculateTerminalValue(
-    {
-      method: 'gordon-growth',
-      finalYearFCF,
-      growthRate: terminalGrowthRate,
-      discountRate,
-    },
+    terminalValueMethod === 'gordon-growth'
+      ? {
+          method: 'gordon-growth',
+          finalYearFCF,
+          growthRate: terminalGrowthRate,
+          discountRate,
+        }
+      : {
+          method: 'exit-multiple',
+          finalYearEBITDA,
+          exitMultiple,
+          discountRate,
+        },
     projectionYears
   );
   
@@ -174,6 +186,7 @@ function calculateDCFValuation(
       terminalGrowthRate,
     },
     yearlyData,
+    finalYearEBITDA,
   };
 }
 
@@ -559,6 +572,14 @@ export function Valuation() {
     corporate.effectiveDate || new Date().toISOString().split('T')[0]
   );
   const [selectedPresetId, setSelectedPresetId] = useState<string>('today');
+  
+  // Terminal value method state
+  const updateExit = useAssumptionsStore((state) => state.updateExit);
+  const exit = useAssumptionsStore((state) => state.exit);
+  const [tvMethod, setTvMethod] = useState<TerminalValueMethod>(
+    exit.method === 'exitMultiple' ? 'exit-multiple' : 'gordon-growth'
+  );
+  const [exitMultiple, setExitMultiple] = useState(exit.exitEbitdaMultiple);
 
   // Generate date presets
   const datePresets: DatePreset[] = useMemo(() => {
@@ -599,7 +620,9 @@ export function Valuation() {
       marketing.percentOfRevenue,
       capital.workingCapitalPercent,
       capital.capexYear1,
-      capital.capexGrowthRate
+      capital.capexGrowthRate,
+      tvMethod,
+      exitMultiple
     );
   }, [
     selectedScenarioId,
@@ -614,6 +637,8 @@ export function Valuation() {
     capital.workingCapitalPercent,
     capital.capexYear1,
     capital.capexGrowthRate,
+    tvMethod,
+    exitMultiple,
   ]);
   
   // Calculate multiples
@@ -911,6 +936,27 @@ export function Valuation() {
           </div>
         </div>
       </div>
+
+      {/* Terminal Value Breakdown */}
+      <TerminalValueBreakdown
+        method={tvMethod}
+        onMethodChange={(method) => {
+          setTvMethod(method);
+          // Also update the store
+          updateExit({ method: method === 'gordon-growth' ? 'gordon' : 'exitMultiple' });
+        }}
+        finalYearFCF={valuation.yearlyData[valuation.yearlyData.length - 1]?.fcf || 0}
+        finalYearEBITDA={valuation.finalYearEBITDA}
+        terminalGrowthRate={corporate.terminalGrowthRate}
+        discountRate={corporate.discountRate}
+        exitMultiple={exitMultiple}
+        onExitMultipleChange={(multiple) => {
+          setExitMultiple(multiple);
+          updateExit({ exitEbitdaMultiple: multiple });
+        }}
+        projectionYears={corporate.projectionYears}
+        enterpriseValue={valuation.enterpriseValue}
+      />
 
       {/* FCF Projection Chart */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">

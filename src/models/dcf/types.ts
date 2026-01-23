@@ -67,6 +67,70 @@ export interface TerminalValueResult {
   method: TerminalValueMethod;
 }
 
+/** Comparable company data for exit multiple benchmarking */
+export interface ComparableCompany {
+  name: string;
+  ticker?: string;
+  evEbitdaMultiple: number;
+  evRevenueMultiple: number;
+  sector: string;
+  marketCap?: number; // in millions
+  description?: string;
+}
+
+/** Terminal value comparison result */
+export interface TerminalValueComparison {
+  gordonGrowth: {
+    terminalValue: number;
+    presentValue: number;
+    impliedEbitdaMultiple: number;
+    assumptions: {
+      finalYearFCF: number;
+      growthRate: number;
+      discountRate: number;
+    };
+  };
+  exitMultiple: {
+    terminalValue: number;
+    presentValue: number;
+    impliedGrowthRate: number;
+    assumptions: {
+      finalYearEBITDA: number;
+      exitMultiple: number;
+      discountRate: number;
+    };
+  };
+  difference: {
+    terminalValue: number;
+    presentValue: number;
+    percentDifference: number;
+  };
+}
+
+/** Terminal value breakdown for display */
+export interface TerminalValueBreakdown {
+  method: TerminalValueMethod;
+  terminalValue: number;
+  presentValue: number;
+  percentOfEnterpriseValue: number;
+  // Gordon Growth specific
+  gordonDetails?: {
+    finalYearFCF: number;
+    growthRate: number;
+    discountRate: number;
+    formula: string;
+    impliedMultiple: number;
+  };
+  // Exit Multiple specific
+  exitMultipleDetails?: {
+    finalYearEBITDA: number;
+    exitMultiple: number;
+    formula: string;
+    impliedGrowthRate: number;
+    comparableCompanies: ComparableCompany[];
+  };
+}
+
 /** Complete DCF valuation result */
 export interface DCFValuation {
   enterpriseValue: number;
