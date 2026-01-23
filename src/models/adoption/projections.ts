@@ -40,6 +40,14 @@ export function projectUnits(sigmoidValue: number): number {
 }
 
 /**
+ * Get sigmoid value for a scenario and year
+ */
+export function getSigmoidValue(scenario: string, year: number): number {
+  const params = getScenarioParams(scenario);
+  return sigmoid(year, params.L, params.x0, params.k, params.b);
+}
+
+/**
  * Generate annual unit projections for a scenario
  *
  * @param scenario - Scenario name (max, upside, base, downside, min)
@@ -58,6 +66,30 @@ export function getAnnualProjections(
   }
   
   return table.slice(0, years);
+}
+
+/**
+ * Convert annual units to monthly distribution with optional seasonality
+ * 
+ * @param annualUnits - Total units for the year
+ * @param seasonalityFactor - Variance factor (0 = flat, 0.1 = 10% variance)
+ * @returns Array of 12 monthly unit values
+ */
+export function getMonthlyProjections(
+  annualUnits: number,
+  seasonalityFactor: number = 0
+): number[] {
+  const baseMonthly = annualUnits / 12;
+  
+  if (seasonalityFactor === 0) {
+    return Array(12).fill(baseMonthly);
+  }
+  
+  // Simple sine-wave seasonality (peak in summer/Q3)
+  return Array.from({ length: 12 }, (_, month) => {
+    const seasonalMultiplier = 1 + seasonalityFactor * Math.sin((month - 3) * Math.PI / 6);
+    return baseMonthly * seasonalMultiplier;
+  });
 }
 
 /**
