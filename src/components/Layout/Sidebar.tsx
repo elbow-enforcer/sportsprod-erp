@@ -17,13 +17,20 @@ const navItems: NavItem[] = [
 ]
 
 const valuationItems: NavItem[] = [
+  { path: '/valuation/summary', label: 'Summary', icon: '📋', permission: 'view:dcf' },
   { path: '/valuation', label: 'DCF Valuation', icon: '📉', permission: 'view:dcf' },
   { path: '/assumptions', label: 'Assumptions', icon: '⚙️', permission: 'view:dcf' },
-  { path: '/investors', label: 'Investor Cohorts', icon: '👥', permission: 'view:dcf' },
+]
+
+const financialsItems: NavItem[] = [
+  { path: '/financials/income-statement', label: 'Income Statement', icon: '📄', permission: 'view:projections' },
+  { path: '/financials/balance-sheet', label: 'Balance Sheet', icon: '⚖️', permission: 'view:projections' },
+  { path: '/financials/cash-flow', label: 'Cash Flow', icon: '💵', permission: 'view:projections' },
 ]
 
 const capitalItems: NavItem[] = [
-  { path: '/capital', label: 'Capital', icon: '🏦', permission: 'view:capital' },
+  { path: '/capital', label: 'Cap Table', icon: '🏦', permission: 'view:capital' },
+  { path: '/investors', label: 'Investor Cohorts', icon: '👥', permission: 'view:dcf' },
   { path: '/inventory', label: 'Inventory', icon: '📦', permission: 'view:inventory' },
 ]
 
@@ -112,6 +119,11 @@ export function Sidebar() {
         
         <SectionHeader label="Valuation" collapsed={collapsed} />
         {valuationItems.map((item) => (
+          <NavItemLink key={item.path} item={item} collapsed={collapsed} />
+        ))}
+        
+        <SectionHeader label="Financials" collapsed={collapsed} />
+        {financialsItems.map((item) => (
           <NavItemLink key={item.path} item={item} collapsed={collapsed} />
         ))}
         

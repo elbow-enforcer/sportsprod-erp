@@ -5,10 +5,12 @@ import { Projections } from './projections'
 import { Costs } from './costs'
 import { Revenue } from './revenue'
 import { Marketing, LaunchPlan, EmailSequences, Campaigns, MarketingAnalytics, ReferralProgram, VideoPlaybook, VideoIdeasBank, CompetitorResearch, VideoBriefTemplate } from './marketing'
+import { FPADashboard, QuickBooksConnect, AccountMapping, Historicals } from './fpa'
+import { IncomeStatement, BalanceSheet, CashFlowStatement } from './financials'
 import { Inventory } from './inventory'
 import { Pricing } from './pricing'
 import { AllAssumptions } from './assumptions'
-import { Valuation } from './valuation'
+import { Valuation, ValuationSummary } from './valuation'
 import { InvestorCohorts } from './investors'
 import { AuthProvider, ProtectedRoute, LoginPage, RoleSelector, PermissionGate } from './auth'
 
@@ -112,6 +114,18 @@ function App() {
                 <PermissionGate permission="view:inventory" fallback={<AccessDenied />}>
                   <Layout title="Inventory">
                     <Inventory />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/valuation/summary"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:dcf" fallback={<AccessDenied />}>
+                  <Layout title="Valuation Summary">
+                    <ValuationSummary />
                   </Layout>
                 </PermissionGate>
               </ProtectedRoute>
@@ -256,6 +270,90 @@ function App() {
                 <PermissionGate permission="view:marketing" fallback={<AccessDenied />}>
                   <Layout title="Video Brief">
                     <VideoBriefTemplate />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/financials/income-statement"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:projections" fallback={<AccessDenied />}>
+                  <Layout title="Income Statement">
+                    <IncomeStatement />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/financials/balance-sheet"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:projections" fallback={<AccessDenied />}>
+                  <Layout title="Balance Sheet">
+                    <BalanceSheet />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/financials/cash-flow"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:projections" fallback={<AccessDenied />}>
+                  <Layout title="Cash Flow Statement">
+                    <CashFlowStatement />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/fpa"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:fpa" fallback={<AccessDenied />}>
+                  <Layout title="FP&A Dashboard">
+                    <FPADashboard />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/fpa/quickbooks"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:fpa" fallback={<AccessDenied />}>
+                  <Layout title="QuickBooks Integration">
+                    <QuickBooksConnect />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/fpa/mapping"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:fpa" fallback={<AccessDenied />}>
+                  <Layout title="Account Mapping">
+                    <AccountMapping />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/fpa/historicals"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:fpa" fallback={<AccessDenied />}>
+                  <Layout title="Historical Financials">
+                    <Historicals />
                   </Layout>
                 </PermissionGate>
               </ProtectedRoute>
