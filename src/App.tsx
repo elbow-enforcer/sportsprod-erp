@@ -4,6 +4,7 @@ import { Dashboard } from './dashboard/Dashboard'
 import { Projections } from './projections'
 import { Marketing, LaunchPlan, EmailSequences, Campaigns, MarketingAnalytics } from './marketing'
 import { Inventory } from './inventory'
+import { Pricing } from './pricing'
 
 // Placeholder pages for other routes
 function PlaceholderPage({ title }: { title: string }) {
@@ -90,6 +91,14 @@ function App() {
           element={
             <Layout title="Marketing Analytics">
               <MarketingAnalytics />
+            </Layout>
+          }
+        />
+        <Route
+          path="/pricing"
+          element={
+            <Layout title="Pricing">
+              <Pricing />
             </Layout>
           }
         />
