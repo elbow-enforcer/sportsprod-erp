@@ -41,3 +41,17 @@ export {
   calculateBOMCost,
   checkMaterialAvailability,
 } from './store';
+
+// Mock Data (for development/testing)
+export {
+  mockSuppliers,
+  mockRawMaterials,
+  mockBillsOfMaterials,
+  mockWorkOrders,
+  mockProductionRuns,
+  mockQualityCheckpoints,
+  mockAlerts,
+  initializeMockData,
+  generateHistoricalProductionData,
+  getProductionByProduct,
+} from './mockData';
