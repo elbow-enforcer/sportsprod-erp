@@ -1,0 +1,623 @@
+openapi: 3.0.3
+info:
+  title: SportsProd ERP API
+  description: |
+    Financial planning and analysis API for SportsProd ERP.
+    
+    ## Authentication
+    All endpoints require JWT authentication via Bearer token.
+    Obtain tokens through the `/auth/login` endpoint.
+    
+    ## Roles
+    - `admin` - Full access
+    - `finance` - Financial data access
+    - `management` - Business operations
+    - `sales_marketing` - Sales and marketing data
+    - `operations` - Inventory and supply chain
+  version: 1.0.0
+  contact:
+    name: SportsProd Team
+
+servers:
+  - url: /api
+    description: Local development server
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: Authentication
+    description: User authentication and session management
+  - name: Projections
+    description: Financial projections and forecasts
+  - name: Scenarios
+    description: Financial scenario management
+  - name: Configuration
+    description: System configuration
+
+paths:
+  # ==========================================================================
+  # AUTHENTICATION
+  # ==========================================================================
+  /auth/login:
+    post:
+      tags: [Authentication]
+      summary: User login
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@sportsprod.com
+                password:
+                  type: string
+                  format: password
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/logout:
+    post:
+      tags: [Authentication]
+      summary: User logout
+      responses:
+        '204':
+          description: Logout successful
+
+  /auth/me:
+    get:
+      tags: [Authentication]
+      summary: Get current user
+      responses:
+        '200':
+          description: Current user info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/refresh:
+    post:
+      tags: [Authentication]
+      summary: Refresh access token
+      responses:
+        '200':
+          description: Token refreshed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # ==========================================================================
+  # PROJECTIONS
+  # ==========================================================================
+  /projections:
+    get:
+      tags: [Projections]
+      summary: List projections
+      description: Get financial projections, optionally filtered by scenario
+      parameters:
+        - name: scenarioId
+          in: query
+          schema:
+            type: integer
+          description: Filter by scenario ID
+        - name: year
+          in: query
+          schema:
+            type: integer
+          description: Filter by year
+      responses:
+        '200':
+          description: List of projections
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Projection'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      tags: [Projections]
+      summary: Create projection
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectionInput'
+      responses:
+        '201':
+          description: Projection created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Projection'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /projections/{id}:
+    get:
+      tags: [Projections]
+      summary: Get projection by ID
+      parameters:
+        - $ref: '#/components/parameters/ProjectionId'
+      responses:
+        '200':
+          description: Projection details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Projection'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags: [Projections]
+      summary: Update projection
+      parameters:
+        - $ref: '#/components/parameters/ProjectionId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectionInput'
+      responses:
+        '200':
+          description: Projection updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Projection'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      tags: [Projections]
+      summary: Delete projection
+      parameters:
+        - $ref: '#/components/parameters/ProjectionId'
+      responses:
+        '204':
+          description: Projection deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ==========================================================================
+  # SCENARIOS
+  # ==========================================================================
+  /scenarios:
+    get:
+      tags: [Scenarios]
+      summary: List scenarios
+      parameters:
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [base, optimistic, pessimistic, custom]
+          description: Filter by scenario type
+        - name: isActive
+          in: query
+          schema:
+            type: boolean
+          description: Filter by active status
+      responses:
+        '200':
+          description: List of scenarios
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Scenario'
+
+    post:
+      tags: [Scenarios]
+      summary: Create scenario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScenarioInput'
+      responses:
+        '201':
+          description: Scenario created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scenario'
+
+  /scenarios/{id}:
+    get:
+      tags: [Scenarios]
+      summary: Get scenario by ID
+      parameters:
+        - $ref: '#/components/parameters/ScenarioId'
+      responses:
+        '200':
+          description: Scenario details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scenario'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags: [Scenarios]
+      summary: Update scenario
+      parameters:
+        - $ref: '#/components/parameters/ScenarioId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScenarioInput'
+      responses:
+        '200':
+          description: Scenario updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Scenario'
+
+    delete:
+      tags: [Scenarios]
+      summary: Delete scenario
+      parameters:
+        - $ref: '#/components/parameters/ScenarioId'
+      responses:
+        '204':
+          description: Scenario deleted
+
+  # ==========================================================================
+  # CONFIGURATION
+  # ==========================================================================
+  /config:
+    get:
+      tags: [Configuration]
+      summary: Get system configuration
+      responses:
+        '200':
+          description: System configuration
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Config'
+
+    patch:
+      tags: [Configuration]
+      summary: Update configuration
+      description: Requires admin role
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfigUpdate'
+      responses:
+        '200':
+          description: Configuration updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Config'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /config/roles:
+    get:
+      tags: [Configuration]
+      summary: Get available roles and permissions
+      responses:
+        '200':
+          description: Roles and permissions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  roles:
+                    type: array
+                    items:
+                      type: string
+                    example: [admin, finance, management, sales_marketing, operations]
+                  permissions:
+                    type: object
+                    additionalProperties:
+                      type: array
+                      items:
+                        type: string
+
+components:
+  # ==========================================================================
+  # SECURITY SCHEMES
+  # ==========================================================================
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  # ==========================================================================
+  # PARAMETERS
+  # ==========================================================================
+  parameters:
+    ProjectionId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: Projection ID
+    ScenarioId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+      description: Scenario ID
+
+  # ==========================================================================
+  # SCHEMAS
+  # ==========================================================================
+  schemas:
+    # Auth schemas
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: JWT access token
+        refreshToken:
+          type: string
+          description: Refresh token
+        user:
+          $ref: '#/components/schemas/User'
+        mustChangePassword:
+          type: boolean
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        role:
+          type: string
+          enum: [admin, finance, management, sales_marketing, operations]
+        permissions:
+          type: array
+          items:
+            type: string
+
+    # Projection schemas
+    Projection:
+      type: object
+      properties:
+        id:
+          type: integer
+        scenarioId:
+          type: integer
+        year:
+          type: integer
+        month:
+          type: integer
+          nullable: true
+        revenue:
+          type: number
+        cogs:
+          type: number
+        grossProfit:
+          type: number
+        marketing:
+          type: number
+        gna:
+          type: number
+        rd:
+          type: number
+        ebitda:
+          type: number
+        netIncome:
+          type: number
+        operatingCashFlow:
+          type: number
+        capex:
+          type: number
+        freeCashFlow:
+          type: number
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ProjectionInput:
+      type: object
+      required: [scenarioId, year]
+      properties:
+        scenarioId:
+          type: integer
+        year:
+          type: integer
+        month:
+          type: integer
+        revenue:
+          type: number
+          default: 0
+        cogs:
+          type: number
+          default: 0
+        marketing:
+          type: number
+          default: 0
+        gna:
+          type: number
+          default: 0
+        rd:
+          type: number
+          default: 0
+        capex:
+          type: number
+          default: 0
+
+    # Scenario schemas
+    Scenario:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+          enum: [base, optimistic, pessimistic, custom]
+        isActive:
+          type: boolean
+        startYear:
+          type: integer
+        endYear:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ScenarioInput:
+      type: object
+      required: [name, startYear, endYear]
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+          enum: [base, optimistic, pessimistic, custom]
+          default: custom
+        isActive:
+          type: boolean
+          default: true
+        startYear:
+          type: integer
+        endYear:
+          type: integer
+
+    # Config schemas
+    Config:
+      type: object
+      properties:
+        fiscalYearStart:
+          type: integer
+          description: Starting month of fiscal year (1-12)
+          example: 1
+        defaultCurrency:
+          type: string
+          example: USD
+        projectionYears:
+          type: integer
+          description: Default number of years for projections
+          example: 5
+
+    ConfigUpdate:
+      type: object
+      properties:
+        fiscalYearStart:
+          type: integer
+        defaultCurrency:
+          type: string
+        projectionYears:
+          type: integer
+
+    # Error schema
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        statusCode:
+          type: integer
+
+  # ==========================================================================
+  # RESPONSES
+  # ==========================================================================
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: BadRequest
+            message: Invalid request body
+            statusCode: 400
+
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: Unauthorized
+            message: Authentication required
+            statusCode: 401
+
+    Forbidden:
+      description: Insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: Forbidden
+            message: Insufficient permissions
+            statusCode: 403
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: NotFound
+            message: Resource not found
+            statusCode: 404
