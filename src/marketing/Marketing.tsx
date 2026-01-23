@@ -12,6 +12,7 @@ const quickLinks = [
   { path: '/marketing/email', label: 'Email Sequences', icon: '📧', desc: 'Automated email campaigns' },
   { path: '/marketing/campaigns', label: 'Campaigns', icon: '🎯', desc: 'Track campaign performance' },
   { path: '/marketing/analytics', label: 'Analytics', icon: '📊', desc: 'Marketing metrics & ROI' },
+  { path: '/marketing/budget', label: 'Budget Allocation', icon: '💰', desc: 'Configure budget by channel' },
 ]
 
 export function Marketing() {

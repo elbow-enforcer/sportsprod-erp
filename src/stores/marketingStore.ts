@@ -11,6 +11,7 @@ import type {
   CACResult,
   ROASResult,
   BudgetAllocation,
+  ChannelBudget,
   ChannelCategory,
 } from '../models/marketing/types';
 import {
@@ -132,6 +133,33 @@ export const useMarketingStore = create<MarketingState>((set, get) => ({
         [category]: percent,
       },
     })),
+
+  // Channel-level budgets
+  channelBudgets: [],
+  setChannelBudget: (channelId, budget) =>
+    set((state) => {
+      const { totalBudget, channelBudgets } = state;
+      const percentage = totalBudget > 0 ? (budget / totalBudget) * 100 : 0;
+      const existing = channelBudgets.find((cb) => cb.channel === channelId);
+      if (existing) {
+        return {
+          channelBudgets: channelBudgets.map((cb) =>
+            cb.channel === channelId ? { ...cb, budget, percentage } : cb
+          ),
+        };
+      }
+      return {
+        channelBudgets: [...channelBudgets, { channel: channelId, budget, percentage }],
+      };
+    }),
+  getChannelBudgets: () => {
+    const { channels, totalBudget, channelBudgets } = get();
+    const activeChannels = channels.filter((ch) => ch.isActive);
+    return activeChannels.map((ch) => {
+      const existing = channelBudgets.find((cb) => cb.channel === ch.id);
+      return existing || { channel: ch.id, budget: 0, percentage: 0 };
+    });
+  },
 
   // Current period
   currentPeriod: new Date().toISOString().slice(0, 7),
