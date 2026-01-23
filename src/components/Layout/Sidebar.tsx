@@ -16,9 +16,13 @@ const navItems: NavItem[] = [
   { path: '/costs', label: 'Costs', icon: '💸', permission: 'view:costs' },
 ]
 
+const valuationItems: NavItem[] = [
+  { path: '/valuation', label: 'DCF Valuation', icon: '📉', permission: 'view:dcf' },
+  { path: '/assumptions', label: 'Assumptions', icon: '⚙️', permission: 'view:dcf' },
+]
+
 const capitalItems: NavItem[] = [
   { path: '/capital', label: 'Capital', icon: '🏦', permission: 'view:capital' },
-  { path: '/dcf', label: 'DCF Model', icon: '📉', permission: 'view:dcf' },
   { path: '/inventory', label: 'Inventory', icon: '📦', permission: 'view:inventory' },
 ]
 
@@ -79,87 +83,50 @@ export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false)
 
   return (
-    <>
-      {/* Mobile overlay */}
-      <div
-        className={`fixed inset-0 bg-black/50 z-20 lg:hidden ${
-          collapsed ? 'hidden' : ''
-        }`}
-        onClick={() => setCollapsed(true)}
-      />
-
-      {/* Sidebar */}
-      <aside
-        className={`fixed lg:static inset-y-0 left-0 z-30 flex flex-col bg-slate-900 text-white transition-all duration-300 ${
-          collapsed ? '-translate-x-full lg:translate-x-0 lg:w-20' : 'w-64'
-        }`}
-      >
-        {/* Logo */}
-        <div className="flex items-center justify-between h-16 px-4 border-b border-slate-700">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center font-bold">
-              S
+    <aside className={`${collapsed ? 'w-16' : 'w-56'} bg-slate-900 text-white flex flex-col transition-all duration-200`}>
+      <div className="flex items-center justify-between h-16 px-4 border-b border-slate-700">
+        {!collapsed && (
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-sm">S</span>
             </div>
-            {!collapsed && (
-              <span className="font-semibold text-lg">SportsProd</span>
-            )}
+            <span className="font-semibold">SportsProd</span>
           </div>
-          <button
-            onClick={() => setCollapsed(!collapsed)}
-            className="p-1.5 rounded-lg hover:bg-slate-800 hidden lg:block"
-          >
-            {collapsed ? '→' : '←'}
-          </button>
-        </div>
-
-        {/* Navigation */}
-        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-          {/* Main Navigation */}
-          {navItems.map((item) => (
-            <NavItemLink key={item.path} item={item} collapsed={collapsed} />
-          ))}
-
-          {/* Capital Section - requires at least one capital permission */}
-          <PermissionGate permission="view:capital" fallback={
-            <PermissionGate permission="view:inventory">
-              <SectionHeader label="Capital" collapsed={collapsed} />
-              {capitalItems.filter(i => i.permission === 'view:inventory').map((item) => (
-                <NavItemLink key={item.path} item={item} collapsed={collapsed} />
-              ))}
-            </PermissionGate>
-          }>
-            <SectionHeader label="Capital" collapsed={collapsed} />
-            {capitalItems.map((item) => (
-              <NavItemLink key={item.path} item={item} collapsed={collapsed} />
-            ))}
-          </PermissionGate>
-
-          {/* Marketing Section */}
-          <PermissionGate permission="view:marketing">
-            <SectionHeader label="Marketing" collapsed={collapsed} />
-            {marketingItems.map((item) => (
-              <NavItemLink key={item.path} item={item} collapsed={collapsed} />
-            ))}
-          </PermissionGate>
-        </nav>
-
-        {/* Footer */}
-        <div className="p-4 border-t border-slate-700">
-          {!collapsed && (
-            <p className="text-xs text-slate-500">ERP v0.1.0</p>
-          )}
-        </div>
-      </aside>
-
-      {/* Mobile toggle button */}
-      <button
-        onClick={() => setCollapsed(false)}
-        className={`fixed bottom-4 left-4 z-10 p-3 bg-slate-900 text-white rounded-full shadow-lg lg:hidden ${
-          collapsed ? '' : 'hidden'
-        }`}
-      >
-        ☰
-      </button>
-    </>
+        )}
+        <button
+          onClick={() => setCollapsed(!collapsed)}
+          className="p-1 hover:bg-slate-800 rounded"
+        >
+          {collapsed ? '→' : '←'}
+        </button>
+      </div>
+      
+      <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
+        {navItems.map((item) => (
+          <NavItemLink key={item.path} item={item} collapsed={collapsed} />
+        ))}
+        
+        <SectionHeader label="Valuation" collapsed={collapsed} />
+        {valuationItems.map((item) => (
+          <NavItemLink key={item.path} item={item} collapsed={collapsed} />
+        ))}
+        
+        <SectionHeader label="Capital" collapsed={collapsed} />
+        {capitalItems.map((item) => (
+          <NavItemLink key={item.path} item={item} collapsed={collapsed} />
+        ))}
+        
+        <SectionHeader label="Marketing" collapsed={collapsed} />
+        {marketingItems.map((item) => (
+          <NavItemLink key={item.path} item={item} collapsed={collapsed} />
+        ))}
+      </nav>
+      
+      <div className="p-4 border-t border-slate-700">
+        {!collapsed && (
+          <p className="text-xs text-slate-500">ERP v0.1.0</p>
+        )}
+      </div>
+    </aside>
   )
 }
