@@ -4,7 +4,7 @@ import { Dashboard } from './dashboard/Dashboard'
 import { Projections } from './projections'
 import { Costs } from './costs'
 import { Revenue } from './revenue'
-import { Marketing, LaunchPlan, EmailSequences, Campaigns, MarketingAnalytics, ReferralProgram, VideoPlaybook, VideoIdeasBank, CompetitorResearch, VideoBriefTemplate } from './marketing'
+import { Marketing, LaunchPlan, EmailSequences, Campaigns, MarketingAnalytics, CACDashboard, ReferralProgram, VideoPlaybook, VideoIdeasBank, CompetitorResearch, VideoBriefTemplate } from './marketing'
 import { PreorderSettings } from './preorder'
 import { DepositConfiguration } from './preorder'
 import { FPADashboard, QuickBooksConnect, AccountMapping, Historicals, QBOActualsImport } from './fpa'
@@ -254,6 +254,18 @@ function App() {
                 <PermissionGate permission="view:marketing" fallback={<AccessDenied />}>
                   <Layout title="Marketing Analytics">
                     <MarketingAnalytics />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/marketing/cac"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:marketing" fallback={<AccessDenied />}>
+                  <Layout title="CAC Dashboard">
+                    <CACDashboard />
                   </Layout>
                 </PermissionGate>
               </ProtectedRoute>
