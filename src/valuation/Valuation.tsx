@@ -12,6 +12,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { KPICard } from '../components/KPICard';
+import { CashFlowWaterfall } from '../components/charts/CashFlowWaterfall';
 import { useAssumptionsStore } from '../stores/assumptionsStore';
 import { useScenarioStore } from '../stores/scenarioStore';
 import { getAnnualProjections } from '../models/adoption';
