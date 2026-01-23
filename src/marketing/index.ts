@@ -4,3 +4,6 @@ export { EmailSequences } from './EmailSequences'
 export { Campaigns } from './Campaigns'
 export { MarketingAnalytics } from './MarketingAnalytics'
 export { ReferralProgram } from './ReferralProgram'
+export { VideoPlaybook } from './VideoPlaybook'
+import VideoIdeasBankDefault from './VideoIdeasBank'
+export const VideoIdeasBank = VideoIdeasBankDefault

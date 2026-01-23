@@ -4,7 +4,7 @@ import { Dashboard } from './dashboard/Dashboard'
 import { Projections } from './projections'
 import { Costs } from './costs'
 import { Revenue } from './revenue'
-import { Marketing, LaunchPlan, EmailSequences, Campaigns, MarketingAnalytics, ReferralProgram } from './marketing'
+import { Marketing, LaunchPlan, EmailSequences, Campaigns, MarketingAnalytics, ReferralProgram, VideoPlaybook, VideoIdeasBank } from './marketing'
 import { Inventory } from './inventory'
 import { Pricing } from './pricing'
 import { AllAssumptions } from './assumptions'
@@ -220,6 +220,30 @@ function App() {
                 <PermissionGate permission="view:marketing" fallback={<AccessDenied />}>
                   <Layout title="Referral Program">
                     <ReferralProgram />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/marketing/playbook"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:marketing" fallback={<AccessDenied />}>
+                  <Layout title="Video Playbook">
+                    <VideoPlaybook />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/marketing/ideas"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:marketing" fallback={<AccessDenied />}>
+                  <Layout title="Video Ideas Bank">
+                    <VideoIdeasBank />
                   </Layout>
                 </PermissionGate>
               </ProtectedRoute>
