@@ -14,6 +14,7 @@ export type Permission =
   | 'view:supply-chain'
   | 'view:sales'
   | 'view:production'
+  | 'view:preorder'
   | 'edit:supply-chain'
   | 'edit:sales'
   | 'edit:settings'
@@ -34,6 +35,7 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'view:supply-chain',
     'view:sales',
     'view:production',
+    'view:preorder',
     'edit:supply-chain',
     'edit:sales',
     'edit:settings',
@@ -66,6 +68,7 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'view:supply-chain',
     'view:sales',
     'view:production',
+    'view:preorder',
     'edit:supply-chain',
     'edit:sales',
   ],
@@ -76,6 +79,7 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'view:revenue',
     'view:marketing',
     'view:sales',
+    'view:preorder',
     'edit:sales',
   ],
   
