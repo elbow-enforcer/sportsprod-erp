@@ -4,7 +4,7 @@ import { Dashboard } from './dashboard/Dashboard'
 import { Projections } from './projections'
 import { Costs } from './costs'
 import { Revenue, RevenueByScenario } from './revenue'
-import { Marketing, LaunchPlan, EmailSequences, Campaigns, MarketingAnalytics, CACDashboard, ReferralProgram, VideoPlaybook, VideoIdeasBank, CompetitorResearch, VideoBriefTemplate } from './marketing'
+import { Marketing, LaunchPlan, EmailSequences, Campaigns, MarketingAnalytics, CACDashboard, ReferralProgram, VideoPlaybook, VideoIdeasBank, CompetitorResearch, VideoBriefTemplate, BudgetAllocationConfig } from './marketing'
 import { PreorderSettings } from './preorder'
 import { DepositConfiguration } from './preorder'
 import { FPADashboard, QuickBooksConnect, AccountMapping, Historicals, QBOActualsImport } from './fpa'
@@ -326,6 +326,18 @@ function App() {
                 <PermissionGate permission="view:marketing" fallback={<AccessDenied />}>
                   <Layout title="Video Brief">
                     <VideoBriefTemplate />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/marketing/budget"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:marketing" fallback={<AccessDenied />}>
+                  <Layout title="Budget Allocation">
+                    <BudgetAllocationConfig />
                   </Layout>
                 </PermissionGate>
               </ProtectedRoute>

@@ -115,6 +115,19 @@ export interface BudgetAllocation {
 }
 
 /**
+ * Simple channel budget allocation
+ * Used for configuring budget by marketing channel
+ */
+export interface ChannelBudget {
+  /** Channel name or ID */
+  channel: string;
+  /** Allocated budget amount in dollars */
+  budget: number;
+  /** Percentage of total marketing budget (0-100) */
+  percentage: number;
+}
+
+/**
  * Marketing performance summary
  */
 export interface MarketingPerformance {

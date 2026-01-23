@@ -13,6 +13,7 @@ export type {
   CACResult,
   ROASResult,
   BudgetAllocation,
+  ChannelBudget,
   MarketingPerformance,
 } from './types';
 
