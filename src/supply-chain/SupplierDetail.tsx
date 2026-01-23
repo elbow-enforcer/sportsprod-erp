@@ -1,3 +1,11 @@
+/**
+ * @file SupplierDetail.tsx
+ * @description Supplier detail view with contact info, terms, performance metrics, and PO history
+ * @related-prd tasks/prd-supply-chain.md#US-1.2, US-1.3
+ * @author Ralph (AI Agent)
+ * @created 2026-01-23
+ */
+
 import { useParams, useNavigate } from 'react-router-dom';
 import { useSupplyChainStore } from './store';
 import { PO_STATUS_LABELS, PO_STATUS_COLORS } from './types';

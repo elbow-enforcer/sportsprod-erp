@@ -1,3 +1,11 @@
+/**
+ * @file PurchaseOrderList.tsx
+ * @description Purchase order list with status filtering, quick actions, and summary stats
+ * @related-prd tasks/prd-supply-chain.md#US-2.3
+ * @author Ralph (AI Agent)
+ * @created 2026-01-23
+ */
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSupplyChainStore } from './store';

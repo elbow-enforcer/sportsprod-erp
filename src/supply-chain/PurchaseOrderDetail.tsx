@@ -1,3 +1,11 @@
+/**
+ * @file PurchaseOrderDetail.tsx
+ * @description Purchase order create/edit/view with line items, approval workflow, and receiving history
+ * @related-prd tasks/prd-supply-chain.md#US-2.1, US-2.2, US-2.4
+ * @author Ralph (AI Agent)
+ * @created 2026-01-23
+ */
+
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useSupplyChainStore } from './store';

@@ -1,3 +1,11 @@
+/**
+ * @file SupplierList.tsx
+ * @description Supplier list view with CRUD operations - displays supplier cards with performance metrics
+ * @related-prd tasks/prd-supply-chain.md#US-1.1, US-1.3
+ * @author Ralph (AI Agent)
+ * @created 2026-01-23
+ */
+
 import { useState } from 'react';
 import { useSupplyChainStore } from './store';
 import type { Supplier, SupplierStatus } from './types';

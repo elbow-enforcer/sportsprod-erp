@@ -1,3 +1,11 @@
+/**
+ * @file store.ts
+ * @description Zustand store for Supply Chain state management - suppliers, POs, receiving records
+ * @related-prd tasks/prd-supply-chain.md#US-1.1, US-2.1, US-2.2, US-3.1, US-3.3
+ * @author Ralph (AI Agent)
+ * @created 2026-01-23
+ */
+
 import { create } from 'zustand';
 import type {
   Supplier,

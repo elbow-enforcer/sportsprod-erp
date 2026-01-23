@@ -1,3 +1,11 @@
+/**
+ * @file types.ts
+ * @description Type definitions for Supply Chain module - Suppliers, Purchase Orders, and Receiving
+ * @related-prd tasks/prd-supply-chain.md#US-1.1, US-1.2, US-2.1, US-3.1
+ * @author Ralph (AI Agent)
+ * @created 2026-01-23
+ */
+
 // Supply Chain Module Types
 
 export type SupplierStatus = 'active' | 'inactive' | 'pending';

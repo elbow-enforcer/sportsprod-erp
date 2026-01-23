@@ -1,3 +1,11 @@
+/**
+ * @file Receiving.tsx
+ * @description Receiving workflow - receive against PO, quantity/quality inspection, auto-update inventory
+ * @related-prd tasks/prd-supply-chain.md#US-3.1, US-3.2, US-3.3, US-3.4
+ * @author Ralph (AI Agent)
+ * @created 2026-01-23
+ */
+
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useSupplyChainStore } from './store';

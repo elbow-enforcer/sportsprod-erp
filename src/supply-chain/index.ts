@@ -1,3 +1,11 @@
+/**
+ * @file index.ts
+ * @description Barrel exports for Supply Chain module
+ * @related-prd tasks/prd-supply-chain.md
+ * @author Ralph (AI Agent)
+ * @created 2026-01-23
+ */
+
 export { SupplierList } from './SupplierList';
 export { SupplierDetail } from './SupplierDetail';
 export { PurchaseOrderList } from './PurchaseOrderList';

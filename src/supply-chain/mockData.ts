@@ -1,3 +1,11 @@
+/**
+ * @file mockData.ts
+ * @description Sample data for Supply Chain module development and testing
+ * @related-prd tasks/prd-supply-chain.md
+ * @author Ralph (AI Agent)
+ * @created 2026-01-23
+ */
+
 import type { Supplier, PurchaseOrder, ReceivingRecord } from './types';
 
 export const mockSuppliers: Supplier[] = [
