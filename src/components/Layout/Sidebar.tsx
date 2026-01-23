@@ -52,6 +52,17 @@ const salesItems: NavItem[] = [
   { path: '/sales/fulfillment', label: 'Fulfillment', icon: '📦', permission: 'view:sales' },
 ]
 
+const productionItems: NavItem[] = [
+  { path: '/production', label: 'Dashboard', icon: '🏭', permission: 'view:production' },
+  { path: '/production/bom', label: 'Bill of Materials', icon: '📋', permission: 'view:production' },
+  { path: '/production/work-orders', label: 'Work Orders', icon: '📝', permission: 'view:production' },
+  { path: '/production/kanban', label: 'Kanban Board', icon: '📌', permission: 'view:production' },
+  { path: '/production/raw-materials', label: 'Raw Materials', icon: '🧱', permission: 'view:production' },
+  { path: '/production/recording', label: 'Recording', icon: '⏱️', permission: 'view:production' },
+  { path: '/production/quality', label: 'Quality Control', icon: '✅', permission: 'view:production' },
+  { path: '/production/finished-goods', label: 'Finished Goods', icon: '📦', permission: 'view:production' },
+]
+
 function NavItemLink({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
   const link = (
     <NavLink
@@ -145,6 +156,11 @@ export function Sidebar() {
         
         <SectionHeader label="Sales & Orders" collapsed={collapsed} />
         {salesItems.map((item) => (
+          <NavItemLink key={item.path} item={item} collapsed={collapsed} />
+        ))}
+        
+        <SectionHeader label="Production" collapsed={collapsed} />
+        {productionItems.map((item) => (
           <NavItemLink key={item.path} item={item} collapsed={collapsed} />
         ))}
       </nav>
