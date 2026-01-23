@@ -6,8 +6,15 @@ const navItems = [
   { path: '/projections', label: 'Projections', icon: '📈' },
   { path: '/revenue', label: 'Revenue', icon: '💰' },
   { path: '/costs', label: 'Costs', icon: '💸' },
-  { path: '/marketing', label: 'Marketing', icon: '📣' },
   { path: '/capital', label: 'Capital', icon: '🏦' },
+]
+
+const marketingItems = [
+  { path: '/marketing', label: 'Marketing', icon: '📣' },
+  { path: '/marketing/launch', label: 'Launch Plan', icon: '🚀' },
+  { path: '/marketing/email', label: 'Email Sequences', icon: '📧' },
+  { path: '/marketing/campaigns', label: 'Campaigns', icon: '🎯' },
+  { path: '/marketing/analytics', label: 'Analytics', icon: '📊' },
 ]
 
 export function Sidebar() {
@@ -48,11 +55,38 @@ export function Sidebar() {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 p-4 space-y-1">
+        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
           {navItems.map((item) => (
             <NavLink
               key={item.path}
               to={item.path}
+              className={({ isActive }) =>
+                `flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
+                  isActive
+                    ? 'bg-blue-600 text-white'
+                    : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                }`
+              }
+            >
+              <span className="text-xl">{item.icon}</span>
+              {!collapsed && <span>{item.label}</span>}
+            </NavLink>
+          ))}
+
+          {/* Marketing Section */}
+          {!collapsed && (
+            <div className="pt-4 mt-4 border-t border-slate-700">
+              <p className="px-3 mb-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                Marketing
+              </p>
+            </div>
+          )}
+          {collapsed && <div className="pt-4 mt-4 border-t border-slate-700" />}
+          {marketingItems.map((item) => (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              end={item.path === '/marketing'}
               className={({ isActive }) =>
                 `flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
                   isActive

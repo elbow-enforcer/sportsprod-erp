@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { Layout } from './components/Layout/Layout'
 import { Dashboard } from './dashboard/Dashboard'
+import { Marketing, LaunchPlan, EmailSequences, Campaigns, MarketingAnalytics } from './marketing'
 
 // Placeholder pages for other routes
 function PlaceholderPage({ title }: { title: string }) {
@@ -54,7 +55,39 @@ function App() {
           path="/marketing"
           element={
             <Layout title="Marketing">
-              <PlaceholderPage title="Marketing" />
+              <Marketing />
+            </Layout>
+          }
+        />
+        <Route
+          path="/marketing/launch"
+          element={
+            <Layout title="Launch Plan">
+              <LaunchPlan />
+            </Layout>
+          }
+        />
+        <Route
+          path="/marketing/email"
+          element={
+            <Layout title="Email Sequences">
+              <EmailSequences />
+            </Layout>
+          }
+        />
+        <Route
+          path="/marketing/campaigns"
+          element={
+            <Layout title="Campaigns">
+              <Campaigns />
+            </Layout>
+          }
+        />
+        <Route
+          path="/marketing/analytics"
+          element={
+            <Layout title="Marketing Analytics">
+              <MarketingAnalytics />
             </Layout>
           }
         />
