@@ -4,6 +4,7 @@
  * @related-issue #25 - QuickBooks actuals import
  */
 
+export { QBOConnection } from './QBOConnection'
 export { QBOActualsImport } from './QBOActualsImport'
 export { ProfitAndLossImport } from './ProfitAndLossImport'
 export { BalanceSheetImport } from './BalanceSheetImport'
