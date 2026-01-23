@@ -3,7 +3,9 @@
  * All assumptions on one page, vertically oriented, printable/exportable
  */
 
+import { useState } from 'react';
 import { useAssumptionsStore } from '../stores/assumptionsStore';
+import { useScenarioManagementStore } from '../stores/scenarioManagementStore';
 
 const formatCurrency = (value: number) => `$${value.toLocaleString()}`;
 const formatPercent = (value: number) => `${(value * 100).toFixed(1)}%`;
@@ -67,6 +69,10 @@ function Section({ title, icon, children }: SectionProps) {
 }
 
 export function AllAssumptions() {
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [scenarioName, setScenarioName] = useState('');
+  
+  // Assumptions store
   const revenue = useAssumptionsStore((s) => s.revenue);
   const cogs = useAssumptionsStore((s) => s.cogs);
   const marketing = useAssumptionsStore((s) => s.marketing);
@@ -75,6 +81,7 @@ export function AllAssumptions() {
   const corporate = useAssumptionsStore((s) => s.corporate);
   const exit = useAssumptionsStore((s) => s.exit);
   const lastModified = useAssumptionsStore((s) => s.lastModified);
+  const version = useAssumptionsStore((s) => s.version);
   
   const updateRevenue = useAssumptionsStore((s) => s.updateRevenue);
   const updateCOGS = useAssumptionsStore((s) => s.updateCOGS);
@@ -86,6 +93,40 @@ export function AllAssumptions() {
   const exportAsJSON = useAssumptionsStore((s) => s.exportAsJSON);
   const exportAsCSV = useAssumptionsStore((s) => s.exportAsCSV);
   const resetToDefaults = useAssumptionsStore((s) => s.resetToDefaults);
+
+  // Scenario management store
+  const scenarios = useScenarioManagementStore((s) => s.scenarios);
+  const activeScenarioId = useScenarioManagementStore((s) => s.activeScenarioId);
+  const saveScenario = useScenarioManagementStore((s) => s.saveScenario);
+  const deleteScenario = useScenarioManagementStore((s) => s.deleteScenario);
+  const setActiveScenario = useScenarioManagementStore((s) => s.setActiveScenario);
+  const getScenario = useScenarioManagementStore((s) => s.getScenario);
+
+  // Get current assumptions as an object
+  const currentAssumptions = { revenue, cogs, marketing, gna, capital, corporate, exit, version, lastModified };
+
+  const handleSaveScenario = () => {
+    if (scenarioName.trim()) {
+      saveScenario(scenarioName.trim(), currentAssumptions);
+      setScenarioName('');
+      setShowSaveDialog(false);
+    }
+  };
+
+  const handleLoadScenario = (id: string) => {
+    const scenario = getScenario(id);
+    if (scenario) {
+      // Load all assumptions from scenario
+      updateRevenue(scenario.assumptions.revenue);
+      updateCOGS(scenario.assumptions.cogs);
+      updateMarketing(scenario.assumptions.marketing);
+      updateGNA(scenario.assumptions.gna);
+      updateCapital(scenario.assumptions.capital);
+      updateCorporate(scenario.assumptions.corporate);
+      updateExit(scenario.assumptions.exit);
+      setActiveScenario(id);
+    }
+  };
 
   const handleExportJSON = () => {
     const json = exportAsJSON();
@@ -115,12 +156,75 @@ export function AllAssumptions() {
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
+      {/* Scenario Management Bar */}
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 print:hidden">
+        <div className="flex items-center justify-between flex-wrap gap-4">
+          <div className="flex items-center gap-4">
+            <label className="text-sm font-medium text-blue-900">Scenario:</label>
+            <select
+              value={activeScenarioId || ''}
+              onChange={(e) => e.target.value ? handleLoadScenario(e.target.value) : setActiveScenario(null)}
+              className="px-3 py-1.5 text-sm border border-blue-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">-- Current (unsaved) --</option>
+              {scenarios.map((s) => (
+                <option key={s.id} value={s.id}>{s.name}</option>
+              ))}
+            </select>
+            {activeScenarioId && !activeScenarioId.startsWith('default_') && (
+              <button
+                onClick={() => {
+                  if (confirm('Delete this scenario?')) deleteScenario(activeScenarioId);
+                }}
+                className="text-red-600 hover:text-red-800 text-sm"
+              >
+                🗑️ Delete
+              </button>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            {showSaveDialog ? (
+              <>
+                <input
+                  type="text"
+                  value={scenarioName}
+                  onChange={(e) => setScenarioName(e.target.value)}
+                  placeholder="Scenario name..."
+                  className="px-3 py-1.5 text-sm border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  autoFocus
+                />
+                <button
+                  onClick={handleSaveScenario}
+                  className="px-3 py-1.5 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
+                >
+                  Save
+                </button>
+                <button
+                  onClick={() => setShowSaveDialog(false)}
+                  className="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-800"
+                >
+                  Cancel
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={() => setShowSaveDialog(true)}
+                className="px-3 py-1.5 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2"
+              >
+                💾 Save as Scenario
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
       {/* Header with actions */}
       <div className="flex items-center justify-between print:hidden">
         <div>
           <h2 className="text-xl font-bold text-gray-900">Model Assumptions</h2>
           <p className="text-sm text-gray-500">
             Last modified: {new Date(lastModified).toLocaleString()}
+            {activeScenarioId && ` • Scenario: ${scenarios.find(s => s.id === activeScenarioId)?.name}`}
           </p>
         </div>
         <div className="flex gap-2">
@@ -155,6 +259,9 @@ export function AllAssumptions() {
       <div className="hidden print:block text-center mb-6">
         <h1 className="text-2xl font-bold">Elbow Enforcer - Financial Model Assumptions</h1>
         <p className="text-gray-600">Generated: {new Date().toLocaleString()}</p>
+        {activeScenarioId && (
+          <p className="text-gray-600">Scenario: {scenarios.find(s => s.id === activeScenarioId)?.name}</p>
+        )}
       </div>
 
       {/* Assumptions Grid - 3 columns on large screens */}
@@ -268,6 +375,13 @@ export function AllAssumptions() {
             type="currency"
             min={0}
           />
+          <InputField
+            label="Insurance (GL, D&O)"
+            value={gna.insurance}
+            onChange={(v) => updateGNA({ insurance: v })}
+            type="currency"
+            min={0}
+          />
         </Section>
 
         {/* Capital */}
@@ -302,6 +416,31 @@ export function AllAssumptions() {
 
         {/* Corporate */}
         <Section title="Corporate / Valuation" icon="📊">
+          <div className="flex items-center justify-between py-2 border-b border-gray-100">
+            <label className="text-sm text-gray-700">Entity Type</label>
+            <select
+              value={corporate.entityType}
+              onChange={(e) => updateCorporate({ entityType: e.target.value as any })}
+              className="px-2 py-1 text-sm border border-gray-200 rounded focus:ring-2 focus:ring-blue-500 print:border-none"
+            >
+              <option value="c_corp">C Corporation</option>
+              <option value="s_corp">S Corporation</option>
+              <option value="llc">LLC</option>
+              <option value="partnership">Partnership</option>
+              <option value="sole_prop">Sole Proprietorship</option>
+            </select>
+          </div>
+          <div className="flex items-center justify-between py-2 border-b border-gray-100">
+            <label className="text-sm text-gray-700">Modeling Mode</label>
+            <select
+              value={corporate.modelingMode}
+              onChange={(e) => updateCorporate({ modelingMode: e.target.value as any })}
+              className="px-2 py-1 text-sm border border-gray-200 rounded focus:ring-2 focus:ring-blue-500 print:border-none"
+            >
+              <option value="nominal">Nominal (current $)</option>
+              <option value="real">Real (inflation-adjusted)</option>
+            </select>
+          </div>
           <InputField
             label="Tax Rate"
             value={corporate.taxRate}
@@ -314,12 +453,22 @@ export function AllAssumptions() {
             onChange={(v) => updateCorporate({ discountRate: v })}
             type="percent"
           />
-          <InputField
-            label="Terminal Growth Rate"
-            value={corporate.terminalGrowthRate}
-            onChange={(v) => updateCorporate({ terminalGrowthRate: v })}
-            type="percent"
-          />
+          <div className={corporate.modelingMode === 'nominal' ? 'opacity-40' : ''}>
+            <InputField
+              label="Terminal Growth Rate"
+              value={corporate.terminalGrowthRate}
+              onChange={(v) => updateCorporate({ terminalGrowthRate: v })}
+              type="percent"
+            />
+          </div>
+          <div className={corporate.modelingMode === 'nominal' ? 'opacity-40' : ''}>
+            <InputField
+              label="Inflation Rate"
+              value={corporate.inflationRate}
+              onChange={(v) => updateCorporate({ inflationRate: v })}
+              type="percent"
+            />
+          </div>
           <InputField
             label="Projection Years"
             value={corporate.projectionYears}

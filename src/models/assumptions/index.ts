@@ -7,6 +7,8 @@ export type {
   CorporateAssumptions,
   ExitAssumptions,
   AllAssumptions,
+  EntityType,
+  ModelingMode,
 } from './types';
 
 export {

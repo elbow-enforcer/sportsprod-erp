@@ -33,6 +33,7 @@ export const DEFAULT_GNA: GNAAssumptions = {
   salaryGrowthRate: 0.03,
   benefitsMultiplier: 1.3,
   officeAndOps: 50000,
+  insurance: 10000,  // GL, D&O, product liability
 };
 
 export const DEFAULT_CAPITAL: CapitalAssumptions = {
@@ -43,9 +44,12 @@ export const DEFAULT_CAPITAL: CapitalAssumptions = {
 };
 
 export const DEFAULT_CORPORATE: CorporateAssumptions = {
+  entityType: 'c_corp',
+  modelingMode: 'nominal',
   taxRate: 0.25,
   discountRate: 0.12,
   terminalGrowthRate: 0.03,
+  inflationRate: 0.025,  // 2.5% default inflation
   projectionYears: 10,
   effectiveDate: new Date().toISOString().split('T')[0],  // Today's date
   investmentLockInDate: '2024-01-01',  // Default investment lock-in date

@@ -22,6 +22,7 @@ export interface GNAAssumptions {
   salaryGrowthRate: number;      // Default 3%
   benefitsMultiplier: number;    // Default 1.3 (30% benefits)
   officeAndOps: number;          // Default $50,000
+  insurance: number;             // Default $10,000 (GL, D&O, product liability)
 }
 
 export interface CapitalAssumptions {
@@ -31,10 +32,16 @@ export interface CapitalAssumptions {
   capexGrowthRate: number;       // Default 10%
 }
 
+export type EntityType = 'c_corp' | 's_corp' | 'llc' | 'partnership' | 'sole_prop';
+export type ModelingMode = 'nominal' | 'real';
+
 export interface CorporateAssumptions {
+  entityType: EntityType;        // Default C Corp
+  modelingMode: ModelingMode;    // Default nominal
   taxRate: number;               // Default 25%
   discountRate: number;          // Default 12% (WACC)
-  terminalGrowthRate: number;    // Default 3%
+  terminalGrowthRate: number;    // Default 3% (used in real mode)
+  inflationRate: number;         // Default 2.5% (used in real mode)
   projectionYears: number;       // Default 10
   effectiveDate: string;         // ISO date for NPV calculation reference
   investmentLockInDate: string;  // ISO date when investment was locked in

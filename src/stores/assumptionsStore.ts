@@ -170,6 +170,7 @@ export const useAssumptionsStore = create<AssumptionsStore>()(
         rows.push(`G&A,Salary Growth Rate,${(state.gna.salaryGrowthRate * 100).toFixed(1)}%`);
         rows.push(`G&A,Benefits Multiplier,${state.gna.benefitsMultiplier}x`);
         rows.push(`G&A,Office & Ops,$${state.gna.officeAndOps}`);
+        rows.push(`G&A,Insurance,$${state.gna.insurance}`);
         
         // Capital
         rows.push(`Capital,Initial Investment,$${state.capital.initialInvestment}`);
@@ -178,9 +179,12 @@ export const useAssumptionsStore = create<AssumptionsStore>()(
         rows.push(`Capital,CapEx Growth Rate,${(state.capital.capexGrowthRate * 100).toFixed(1)}%`);
         
         // Corporate
+        rows.push(`Corporate,Entity Type,${state.corporate.entityType}`);
+        rows.push(`Corporate,Modeling Mode,${state.corporate.modelingMode}`);
         rows.push(`Corporate,Tax Rate,${(state.corporate.taxRate * 100).toFixed(1)}%`);
         rows.push(`Corporate,Discount Rate (WACC),${(state.corporate.discountRate * 100).toFixed(1)}%`);
         rows.push(`Corporate,Terminal Growth Rate,${(state.corporate.terminalGrowthRate * 100).toFixed(1)}%`);
+        rows.push(`Corporate,Inflation Rate,${(state.corporate.inflationRate * 100).toFixed(1)}%`);
         rows.push(`Corporate,Projection Years,${state.corporate.projectionYears}`);
         
         // Exit
