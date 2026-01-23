@@ -65,3 +65,4 @@ export { WorkOrderDetail } from './WorkOrderDetail';
 export { KanbanBoard } from './KanbanBoard';
 export { ProductionRecording } from './ProductionRecording';
 export { QualityControl } from './QualityControl';
+export { RawMaterials } from './RawMaterials';
