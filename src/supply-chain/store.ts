@@ -1,6 +1,6 @@
 /**
  * @file store.ts
- * @description Zustand store for Supply Chain state management - suppliers, POs, receiving records
+ * @description Zustand store for Supply Chain state management - suppliers, POs, receiving records, vendor quotes
  * @related-prd tasks/prd-supply-chain.md#US-1.1, US-2.1, US-2.2, US-3.1, US-3.3
  * @author Ralph (AI Agent)
  * @created 2026-01-23
@@ -14,18 +14,25 @@ import type {
   ReceivingLineItem,
   POStatus,
   SupplierPerformance,
+  VendorQuote,
+  NormalizedQuote,
+  QuotePriceHistory,
+  QuoteStatus,
 } from './types';
-import { mockSuppliers, mockPurchaseOrders, mockReceivingRecords } from './mockData';
+import { mockSuppliers, mockPurchaseOrders, mockReceivingRecords, mockVendorQuotes, mockQuotePriceHistory } from './mockData';
 
 interface SupplyChainState {
   // Data
   suppliers: Supplier[];
   purchaseOrders: PurchaseOrder[];
   receivingRecords: ReceivingRecord[];
+  vendorQuotes: VendorQuote[];
+  quotePriceHistory: QuotePriceHistory[];
 
   // UI State
   selectedSupplierId: string | null;
   selectedPOId: string | null;
+  selectedMaterialId: string | null;
 
   // Supplier Actions
   addSupplier: (supplier: Omit<Supplier, 'id' | 'createdAt' | 'updatedAt'>) => void;
@@ -50,6 +57,21 @@ interface SupplyChainState {
   updateReceivingStatus: (id: string, lineItems: ReceivingLineItem[], notes: string) => void;
   getReceivingByPOId: (poId: string) => ReceivingRecord[];
 
+  // Vendor Quote Actions
+  addVendorQuote: (quote: Omit<VendorQuote, 'id' | 'createdAt' | 'updatedAt'>) => void;
+  updateVendorQuote: (id: string, updates: Partial<VendorQuote>) => void;
+  deleteVendorQuote: (id: string) => void;
+  updateQuoteStatus: (id: string, status: QuoteStatus) => void;
+  setSelectedMaterial: (id: string | null) => void;
+  
+  // Vendor Quote Computed
+  getQuotesByMaterial: (materialId: string) => VendorQuote[];
+  getQuotesBySupplier: (supplierId: string) => VendorQuote[];
+  getNormalizedQuotes: (materialId: string) => NormalizedQuote[];
+  getPriceHistory: (materialId: string) => QuotePriceHistory[];
+  getUniqueMaterials: () => { id: string; name: string; sku: string }[];
+  getBestQuoteForMaterial: (materialId: string) => NormalizedQuote | null;
+
   // Computed
   getActiveSuppliers: () => Supplier[];
   getPOsByStatus: (status: POStatus) => PurchaseOrder[];
@@ -71,9 +93,12 @@ export const useSupplyChainStore = create<SupplyChainState>((set, get) => ({
   suppliers: mockSuppliers,
   purchaseOrders: mockPurchaseOrders,
   receivingRecords: mockReceivingRecords,
+  vendorQuotes: mockVendorQuotes,
+  quotePriceHistory: mockQuotePriceHistory,
 
   selectedSupplierId: null,
   selectedPOId: null,
+  selectedMaterialId: null,
 
   // Supplier Actions
   addSupplier: (supplier) => {
@@ -300,6 +325,131 @@ export const useSupplyChainStore = create<SupplyChainState>((set, get) => ({
 
   getReceivingByPOId: (poId) => {
     return get().receivingRecords.filter((r) => r.purchaseOrderId === poId);
+  },
+
+  // Vendor Quote Actions
+  addVendorQuote: (quote) => {
+    const now = Date.now();
+    const newQuote: VendorQuote = {
+      ...quote,
+      id: generateId('quote'),
+      createdAt: now,
+      updatedAt: now,
+    };
+    set((state) => ({
+      vendorQuotes: [...state.vendorQuotes, newQuote],
+    }));
+  },
+
+  updateVendorQuote: (id, updates) => {
+    set((state) => ({
+      vendorQuotes: state.vendorQuotes.map((q) =>
+        q.id === id ? { ...q, ...updates, updatedAt: Date.now() } : q
+      ),
+    }));
+  },
+
+  deleteVendorQuote: (id) => {
+    set((state) => ({
+      vendorQuotes: state.vendorQuotes.filter((q) => q.id !== id),
+    }));
+  },
+
+  updateQuoteStatus: (id, status) => {
+    set((state) => ({
+      vendorQuotes: state.vendorQuotes.map((q) =>
+        q.id === id ? { ...q, status, updatedAt: Date.now() } : q
+      ),
+    }));
+  },
+
+  setSelectedMaterial: (id) => {
+    set({ selectedMaterialId: id });
+  },
+
+  // Vendor Quote Computed
+  getQuotesByMaterial: (materialId) => {
+    return get().vendorQuotes.filter((q) => q.materialId === materialId);
+  },
+
+  getQuotesBySupplier: (supplierId) => {
+    return get().vendorQuotes.filter((q) => q.supplierId === supplierId);
+  },
+
+  getNormalizedQuotes: (materialId) => {
+    const quotes = get().getQuotesByMaterial(materialId);
+    if (quotes.length === 0) return [];
+
+    // Calculate landed cost for each quote
+    const normalized: NormalizedQuote[] = quotes.map((quote) => {
+      const dutyPerUnit = quote.unitPrice * (quote.dutyRate / 100);
+      const handlingPerUnit = quote.handlingFee / quote.moq;
+      const totalLandedCostPerUnit = 
+        quote.unitPrice + quote.shippingCostPerUnit + dutyPerUnit + handlingPerUnit;
+
+      return {
+        quoteId: quote.id,
+        supplierId: quote.supplierId,
+        supplierName: quote.supplierName,
+        materialId: quote.materialId,
+        materialName: quote.materialName,
+        unitPrice: quote.unitPrice,
+        shippingPerUnit: quote.shippingCostPerUnit,
+        dutyPerUnit,
+        handlingPerUnit,
+        totalLandedCostPerUnit,
+        moq: quote.moq,
+        leadTimeDays: quote.leadTimeDays,
+        paymentTerms: quote.paymentTerms,
+        isBestPrice: false,
+        isBestLeadTime: false,
+        isBestOverall: false,
+        priceVariance: 0,
+      };
+    });
+
+    // Find best values
+    const bestPrice = Math.min(...normalized.map((n) => n.totalLandedCostPerUnit));
+    const bestLeadTime = Math.min(...normalized.map((n) => n.leadTimeDays));
+
+    // Mark best values and calculate variance
+    return normalized.map((n) => ({
+      ...n,
+      isBestPrice: n.totalLandedCostPerUnit === bestPrice,
+      isBestLeadTime: n.leadTimeDays === bestLeadTime,
+      isBestOverall: n.totalLandedCostPerUnit === bestPrice && n.leadTimeDays === bestLeadTime,
+      priceVariance: bestPrice > 0 
+        ? ((n.totalLandedCostPerUnit - bestPrice) / bestPrice) * 100 
+        : 0,
+    }));
+  },
+
+  getPriceHistory: (materialId) => {
+    return get().quotePriceHistory
+      .filter((h) => h.materialId === materialId)
+      .sort((a, b) => a.quotedAt - b.quotedAt);
+  },
+
+  getUniqueMaterials: () => {
+    const quotes = get().vendorQuotes;
+    const materialMap = new Map<string, { id: string; name: string; sku: string }>();
+    
+    quotes.forEach((q) => {
+      if (!materialMap.has(q.materialId)) {
+        materialMap.set(q.materialId, {
+          id: q.materialId,
+          name: q.materialName,
+          sku: q.sku,
+        });
+      }
+    });
+    
+    return Array.from(materialMap.values());
+  },
+
+  getBestQuoteForMaterial: (materialId) => {
+    const normalized = get().getNormalizedQuotes(materialId);
+    return normalized.find((n) => n.isBestPrice) || null;
   },
 
   // Computed

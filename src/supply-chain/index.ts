@@ -11,5 +11,6 @@ export { SupplierDetail } from './SupplierDetail';
 export { PurchaseOrderList } from './PurchaseOrderList';
 export { PurchaseOrderDetail } from './PurchaseOrderDetail';
 export { Receiving } from './Receiving';
+export { VendorComparison } from './VendorComparison';
 export { useSupplyChainStore } from './store';
 export type * from './types';
