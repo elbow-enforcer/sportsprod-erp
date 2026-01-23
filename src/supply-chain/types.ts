@@ -138,3 +138,98 @@ export const INSPECTION_STATUS_LABELS: Record<InspectionStatus, string> = {
   failed: 'Failed',
   partial: 'Partial Pass',
 };
+
+// ============================================================================
+// Vendor Quotes / Bids (for comparison dashboard)
+// ============================================================================
+
+export type QuoteStatus = 'pending' | 'accepted' | 'rejected' | 'expired';
+
+export interface VendorQuote {
+  id: string;
+  supplierId: string;
+  supplierName: string;
+  materialId: string;
+  materialName: string;
+  sku: string;
+  
+  // Pricing
+  unitPrice: number;
+  currency: string;
+  unit: string;
+  
+  // Quantity
+  moq: number; // Minimum Order Quantity
+  maxQuantity?: number;
+  
+  // Cost components (for landed cost calculation)
+  shippingCostPerUnit: number;
+  dutyRate: number; // Percentage (0-100)
+  handlingFee: number; // Flat fee per order
+  
+  // Terms
+  leadTimeDays: number;
+  paymentTerms: string;
+  validUntil: string; // ISO date
+  
+  // Status
+  status: QuoteStatus;
+  notes: string;
+  
+  // Timestamps
+  quotedAt: number;
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface NormalizedQuote {
+  quoteId: string;
+  supplierId: string;
+  supplierName: string;
+  materialId: string;
+  materialName: string;
+  
+  // Normalized values
+  unitPrice: number;
+  shippingPerUnit: number;
+  dutyPerUnit: number;
+  handlingPerUnit: number; // Based on MOQ
+  totalLandedCostPerUnit: number;
+  
+  // Original values for reference
+  moq: number;
+  leadTimeDays: number;
+  paymentTerms: string;
+  
+  // Comparison flags
+  isBestPrice: boolean;
+  isBestLeadTime: boolean;
+  isBestOverall: boolean;
+  
+  // Variance from best price (percentage)
+  priceVariance: number;
+}
+
+export interface QuotePriceHistory {
+  quoteId: string;
+  supplierId: string;
+  supplierName: string;
+  materialId: string;
+  unitPrice: number;
+  totalLandedCost: number;
+  quotedAt: number;
+}
+
+export const QUOTE_STATUS_LABELS: Record<QuoteStatus, string> = {
+  pending: 'Pending',
+  accepted: 'Accepted',
+  rejected: 'Rejected',
+  expired: 'Expired',
+};
+
+export const QUOTE_STATUS_COLORS: Record<QuoteStatus, string> = {
+  pending: 'bg-yellow-100 text-yellow-800',
+  accepted: 'bg-green-100 text-green-800',
+  rejected: 'bg-red-100 text-red-800',
+  expired: 'bg-gray-100 text-gray-800',
+};

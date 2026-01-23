@@ -5,7 +5,7 @@ import { Projections } from './projections'
 import { Costs } from './costs'
 import { Revenue } from './revenue'
 import { Marketing, LaunchPlan, EmailSequences, Campaigns, MarketingAnalytics, ReferralProgram, VideoPlaybook, VideoIdeasBank, CompetitorResearch, VideoBriefTemplate } from './marketing'
-import { FPADashboard, QuickBooksConnect, AccountMapping, Historicals } from './fpa'
+import { FPADashboard, QuickBooksConnect, AccountMapping, Historicals, QBOActualsImport } from './fpa'
 import { IncomeStatement, BalanceSheet, CashFlowStatement } from './financials'
 import { Inventory } from './inventory'
 import { Pricing } from './pricing'
@@ -13,7 +13,7 @@ import { AllAssumptions } from './assumptions'
 import { Valuation, ValuationSummary } from './valuation'
 import { InvestorCohorts } from './investors'
 import { AuthProvider, ProtectedRoute, LoginPage, RoleSelector, PermissionGate } from './auth'
-import { SupplierList, SupplierDetail, PurchaseOrderList, PurchaseOrderDetail, Receiving } from './supply-chain'
+import { SupplierList, SupplierDetail, PurchaseOrderList, PurchaseOrderDetail, Receiving, VendorComparison } from './supply-chain'
 import { CustomerList, CustomerDetail, QuoteList, QuoteDetail, SalesOrderList, SalesOrderDetail, Fulfillment } from './sales'
 import {
   ProductionDashboard,
@@ -438,6 +438,18 @@ function App() {
                 <PermissionGate permission="view:supply-chain" fallback={<AccessDenied />}>
                   <Layout title="Receiving">
                     <Receiving />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/supply-chain/vendor-comparison"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:supply-chain" fallback={<AccessDenied />}>
+                  <Layout title="Vendor Comparison">
+                    <VendorComparison />
                   </Layout>
                 </PermissionGate>
               </ProtectedRoute>
