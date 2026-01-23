@@ -10,6 +10,7 @@ import { Pricing } from './pricing'
 import { AllAssumptions } from './assumptions'
 import { Valuation } from './valuation'
 import { InvestorCohorts } from './investors'
+import { CustomerList, CustomerDetail, QuoteList, QuoteDetail, SalesOrderList, SalesOrderDetail, Fulfillment } from './sales'
 import { AuthProvider, ProtectedRoute, LoginPage, RoleSelector, PermissionGate } from './auth'
 
 // Placeholder pages for other routes
@@ -267,6 +268,92 @@ function App() {
               <Layout title="Pricing">
                 <Pricing />
               </Layout>
+            }
+          />
+          
+          {/* Sales & Orders Routes */}
+          <Route
+            path="/sales/customers"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:sales" fallback={<AccessDenied />}>
+                  <Layout title="Customers">
+                    <CustomerList />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/sales/customers/:id"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:sales" fallback={<AccessDenied />}>
+                  <Layout title="Customer Details">
+                    <CustomerDetail />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/sales/quotes"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:sales" fallback={<AccessDenied />}>
+                  <Layout title="Quotes">
+                    <QuoteList />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/sales/quotes/:id"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:sales" fallback={<AccessDenied />}>
+                  <Layout title="Quote Details">
+                    <QuoteDetail />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/sales/orders"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:sales" fallback={<AccessDenied />}>
+                  <Layout title="Sales Orders">
+                    <SalesOrderList />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/sales/orders/:id"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:sales" fallback={<AccessDenied />}>
+                  <Layout title="Order Details">
+                    <SalesOrderDetail />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/sales/fulfillment"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:sales" fallback={<AccessDenied />}>
+                  <Layout title="Fulfillment">
+                    <Fulfillment />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
             }
           />
         </Routes>

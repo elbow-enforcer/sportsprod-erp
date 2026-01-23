@@ -39,6 +39,13 @@ const marketingItems: NavItem[] = [
   { path: '/marketing/brief', label: 'Video Brief', icon: '📝', permission: 'view:marketing' },
 ]
 
+const salesItems: NavItem[] = [
+  { path: '/sales/customers', label: 'Customers', icon: '👤', permission: 'view:sales' },
+  { path: '/sales/quotes', label: 'Quotes', icon: '📋', permission: 'view:sales' },
+  { path: '/sales/orders', label: 'Sales Orders', icon: '🛒', permission: 'view:sales' },
+  { path: '/sales/fulfillment', label: 'Fulfillment', icon: '📦', permission: 'view:sales' },
+]
+
 function NavItemLink({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
   const link = (
     <NavLink
@@ -122,6 +129,11 @@ export function Sidebar() {
         
         <SectionHeader label="Marketing" collapsed={collapsed} />
         {marketingItems.map((item) => (
+          <NavItemLink key={item.path} item={item} collapsed={collapsed} />
+        ))}
+        
+        <SectionHeader label="Sales & Orders" collapsed={collapsed} />
+        {salesItems.map((item) => (
           <NavItemLink key={item.path} item={item} collapsed={collapsed} />
         ))}
       </nav>
