@@ -2,7 +2,7 @@
  * Revenue Page - Revenue projections with KPIs, chart, and table
  */
 
-import { useMemo } from 'react'
+import { useMemo, useState, useCallback } from 'react'
 import {
   BarChart,
   Bar,
@@ -15,6 +15,7 @@ import {
 import { KPICard } from '../components/KPICard'
 import { useScenarioStore } from '../stores/scenarioStore'
 import { getAnnualProjections } from '../models/adoption'
+import { RevenueProjectionChart, type RevenueProjection } from '../components/charts'
 
 // Constants
 const REVENUE_PER_UNIT = 1000 // $1,000 per unit
@@ -56,6 +57,9 @@ export function Revenue() {
   const { selectedScenarioId, scenarios, selectScenario } = useScenarioStore()
   const selectedScenario = scenarios.find((s) => s.id === selectedScenarioId)
 
+  // State for year drill-down modal
+  const [selectedYear, setSelectedYear] = useState<RevenueProjection | null>(null)
+
   // Calculate revenue data for selected scenario
   const yearData = useMemo((): YearData[] => {
     const units = getAnnualProjections(selectedScenarioId as ScenarioId, 2025, YEARS)
@@ -66,6 +70,27 @@ export function Revenue() {
       revenue: unitCount * REVENUE_PER_UNIT,
     }))
   }, [selectedScenarioId])
+
+  // Generate multi-scenario projection data for enhanced chart
+  const projectionData = useMemo((): RevenueProjection[] => {
+    const baseUnits = getAnnualProjections('base', 2025, YEARS)
+    const upsideUnits = getAnnualProjections('upside', 2025, YEARS)
+    const downsideUnits = getAnnualProjections('downside', 2025, YEARS)
+
+    return baseUnits.map((_, index) => ({
+      year: index + 1,
+      base: baseUnits[index] * REVENUE_PER_UNIT,
+      upside: upsideUnits[index] * REVENUE_PER_UNIT,
+      downside: downsideUnits[index] * REVENUE_PER_UNIT,
+      units: baseUnits[index],
+      price: REVENUE_PER_UNIT,
+    }))
+  }, [])
+
+  // Handle year click for drill-down
+  const handleYearClick = useCallback((_year: number, data: RevenueProjection) => {
+    setSelectedYear(data)
+  }, [])
 
   // KPI calculations
   const totalRevenue = yearData.reduce((sum, d) => sum + d.revenue, 0)
@@ -88,7 +113,7 @@ export function Revenue() {
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <KPICard
-          title="Total Revenue (6Y)"
+          title="Total Revenue (10Y)"
           value={formatCurrency(totalRevenue, true)}
           icon={<span className="text-2xl">💰</span>}
           subtitle="Cumulative projected"
@@ -100,7 +125,7 @@ export function Revenue() {
           subtitle="First year projection"
         />
         <KPICard
-          title="Total Units (6Y)"
+          title="Total Units (10Y)"
           value={formatUnits(totalUnits)}
           icon={<span className="text-2xl">📦</span>}
           subtitle="Cumulative projected"
@@ -133,10 +158,80 @@ export function Revenue() {
         </div>
       </div>
 
-      {/* Revenue Bar Chart */}
+      {/* Enhanced Revenue Projection Chart - Multi-Scenario */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900">
+              10-Year Revenue Projection
+            </h3>
+            <p className="text-sm text-gray-500 mt-1">
+              Compare scenarios with interactive toggle • Click data points for details
+            </p>
+          </div>
+        </div>
+        <RevenueProjectionChart
+          data={projectionData}
+          onYearClick={handleYearClick}
+          showMilestones={true}
+          pricePerUnit={REVENUE_PER_UNIT}
+        />
+      </div>
+
+      {/* Year Drill-Down Modal */}
+      {selectedYear && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 overflow-hidden">
+            <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4">
+              <h3 className="text-lg font-semibold text-white">
+                Year {selectedYear.year} Details
+              </h3>
+            </div>
+            <div className="p-6 space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-green-50 rounded-lg p-4">
+                  <p className="text-xs font-medium text-green-600 uppercase">Upside</p>
+                  <p className="text-xl font-bold text-green-700">{formatCurrency(selectedYear.upside, true)}</p>
+                </div>
+                <div className="bg-blue-50 rounded-lg p-4">
+                  <p className="text-xs font-medium text-blue-600 uppercase">Base</p>
+                  <p className="text-xl font-bold text-blue-700">{formatCurrency(selectedYear.base, true)}</p>
+                </div>
+                <div className="bg-amber-50 rounded-lg p-4">
+                  <p className="text-xs font-medium text-amber-600 uppercase">Downside</p>
+                  <p className="text-xl font-bold text-amber-700">{formatCurrency(selectedYear.downside, true)}</p>
+                </div>
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <p className="text-xs font-medium text-gray-600 uppercase">Units (Base)</p>
+                  <p className="text-xl font-bold text-gray-700">{formatUnits(selectedYear.units)}</p>
+                </div>
+              </div>
+              <div className="border-t pt-4">
+                <h4 className="text-sm font-medium text-gray-700 mb-2">Revenue Breakdown</h4>
+                <div className="text-sm text-gray-600 space-y-1">
+                  <p>Units × Price = Revenue</p>
+                  <p className="font-mono bg-gray-100 rounded px-2 py-1">
+                    {formatUnits(selectedYear.units)} × {formatCurrency(selectedYear.price)} = {formatCurrency(selectedYear.base)}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="px-6 py-4 bg-gray-50 border-t">
+              <button
+                onClick={() => setSelectedYear(null)}
+                className="w-full px-4 py-2 bg-gray-900 text-white rounded-lg font-medium hover:bg-gray-800 transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Revenue Bar Chart - Single Scenario */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">
-          Revenue by Year
+          Revenue by Year ({selectedScenario?.name ?? 'Base'} Scenario)
         </h3>
         <div className="h-72">
           <ResponsiveContainer width="100%" height="100%">
