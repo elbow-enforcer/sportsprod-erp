@@ -11,6 +11,7 @@ import {
   calculateCohortReturns 
 } from '../stores/investorCohortsStore';
 import { useAssumptionsStore } from '../stores/assumptionsStore';
+import { useDCFValuation } from '../hooks';
 
 const INSTRUMENT_LABELS: Record<InstrumentType, string> = {
   common_equity: 'Common Equity',
@@ -88,18 +89,15 @@ const DEFAULT_FORM: CohortFormData = {
   termYears: 5,
 };
 
-function CohortCard({ cohort, onEdit, onDelete }: { 
+function CohortCard({ cohort, onEdit, onDelete, exitValue, exitDate }: { 
   cohort: InvestorCohort; 
   onEdit: () => void;
   onDelete: () => void;
+  exitValue: number;
+  exitDate: string;
 }) {
-  const exit = useAssumptionsStore((s) => s.exit);
-  const corporate = useAssumptionsStore((s) => s.corporate);
-  
-  // Calculate estimated returns (simplified - assumes $10M exit)
-  const estimatedExitValue = 10_000_000; // Placeholder - would come from DCF
-  const exitDate = `${2025 + corporate.projectionYears}-12-31`;
-  const returns = calculateCohortReturns(cohort, estimatedExitValue, exitDate, 1_000_000);
+  // Calculate returns based on live DCF valuation
+  const returns = calculateCohortReturns(cohort, exitValue, exitDate, 1_000_000);
 
   return (
     <div className={`bg-white rounded-lg shadow-sm border p-4 ${cohort.isHistorical ? 'border-green-200' : 'border-blue-200'}`}>
@@ -164,7 +162,7 @@ function CohortCard({ cohort, onEdit, onDelete }: {
 
       {/* Estimated Returns */}
       <div className="border-t pt-3 mt-2">
-        <p className="text-xs text-gray-500 mb-2">Estimated Returns (at ${(estimatedExitValue/1_000_000).toFixed(0)}M exit)</p>
+        <p className="text-xs text-gray-500 mb-2">Estimated Returns (at {formatCurrency(exitValue)} exit)</p>
         <div className="grid grid-cols-3 gap-2 text-center">
           <div className="bg-green-50 rounded p-2">
             <p className="text-xs text-green-600">IRR</p>
@@ -480,6 +478,9 @@ export function InvestorCohorts() {
   const [showForm, setShowForm] = useState(false);
   const [editingCohort, setEditingCohort] = useState<InvestorCohort | null>(null);
   
+  // Get live DCF valuation
+  const dcf = useDCFValuation();
+  
   const cohorts = useInvestorCohortsStore((s) => s.cohorts);
   const addCohort = useInvestorCohortsStore((s) => s.addCohort);
   const updateCohort = useInvestorCohortsStore((s) => s.updateCohort);
@@ -573,10 +574,16 @@ export function InvestorCohorts() {
   return (
     <div className="space-y-6">
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-purple-50 rounded-lg border border-purple-200 p-4">
+          <p className="text-sm text-purple-700">Projected Exit Value</p>
+          <p className="text-2xl font-bold text-purple-800">{formatCurrency(dcf.enterpriseValue)}</p>
+          <p className="text-xs text-purple-600">Year {dcf.exitYear} Enterprise Value</p>
+        </div>
         <div className="bg-white rounded-lg shadow-sm border p-4">
           <p className="text-sm text-gray-500">Total Cohorts</p>
           <p className="text-2xl font-bold text-gray-900">{cohorts.length}</p>
+          <p className="text-xs text-gray-500">{historicalCohorts.length} historical, {futureCohorts.length} projected</p>
         </div>
         <div className="bg-green-50 rounded-lg border border-green-200 p-4">
           <p className="text-sm text-green-700">Historical Investment</p>
@@ -625,6 +632,8 @@ export function InvestorCohorts() {
                 cohort={cohort}
                 onEdit={() => handleEdit(cohort)}
                 onDelete={() => handleDelete(cohort.id)}
+                exitValue={dcf.enterpriseValue}
+                exitDate={dcf.exitDate}
               />
             ))}
           </div>
@@ -644,6 +653,8 @@ export function InvestorCohorts() {
                 cohort={cohort}
                 onEdit={() => handleEdit(cohort)}
                 onDelete={() => handleDelete(cohort.id)}
+                exitValue={dcf.enterpriseValue}
+                exitDate={dcf.exitDate}
               />
             ))}
           </div>
