@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import {
   PieChart,
   Pie,
@@ -7,13 +8,8 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 import type { PieLabelRenderProps } from 'recharts'
-
-const COST_DATA = [
-  { name: 'Manufacturing (COGS)', value: 45, color: '#3B82F6' }, // blue
-  { name: 'Marketing', value: 25, color: '#22C55E' }, // green
-  { name: 'G&A (Personnel)', value: 20, color: '#F97316' }, // orange
-  { name: 'Other', value: 10, color: '#6B7280' }, // gray
-]
+import { useScenarioStore } from '../../stores/scenarioStore'
+import { getAnnualProjections } from '../../models/adoption'
 
 const RADIAN = Math.PI / 180
 
@@ -49,12 +45,54 @@ const renderCustomizedLabel = (props: PieLabelRenderProps) => {
   )
 }
 
+const formatCurrency = (value: number): string => {
+  if (value >= 1_000_000) {
+    return `$${(value / 1_000_000).toFixed(1)}M`
+  } else if (value >= 1_000) {
+    return `$${(value / 1_000).toFixed(0)}K`
+  }
+  return `$${value.toFixed(0)}`
+}
+
 export function CostBreakdownChart() {
+  const { selectedScenarioId } = useScenarioStore()
+
+  const costData = useMemo(() => {
+    // Get Year 1 units for selected scenario
+    const units = getAnnualProjections(selectedScenarioId, 2025, 1)[0]
+
+    // Calculate costs based on scenario
+    const unitCost = 200
+    const cogs = units * unitCost
+
+    const marketingBase = 30000
+    const revenue = units * 1000
+    const marketingVariable = revenue * 0.1 // 10% of revenue
+    const marketing = marketingBase + marketingVariable
+
+    const gna = 50000
+
+    const subtotal = cogs + marketing + gna
+    const other = subtotal * 0.05
+
+    // Build data array, filtering out zero COGS
+    const data: { name: string; value: number; color: string }[] = []
+
+    if (cogs > 0) {
+      data.push({ name: 'Manufacturing (COGS)', value: cogs, color: '#3B82F6' })
+    }
+    data.push({ name: 'Marketing', value: marketing, color: '#22C55E' })
+    data.push({ name: 'G&A (Personnel)', value: gna, color: '#F97316' })
+    data.push({ name: 'Other', value: other, color: '#6B7280' })
+
+    return data
+  }, [selectedScenarioId])
+
   return (
     <ResponsiveContainer width="100%" height="100%">
       <PieChart>
         <Pie
-          data={COST_DATA}
+          data={costData}
           cx="50%"
           cy="50%"
           labelLine={false}
@@ -62,12 +100,12 @@ export function CostBreakdownChart() {
           outerRadius={80}
           dataKey="value"
         >
-          {COST_DATA.map((entry, index) => (
+          {costData.map((entry, index) => (
             <Cell key={`cell-${index}`} fill={entry.color} />
           ))}
         </Pie>
         <Tooltip
-          formatter={(value) => [`${value}%`, 'Percentage']}
+          formatter={(value) => [formatCurrency(Number(value)), 'Cost']}
           contentStyle={{
             backgroundColor: 'white',
             border: '1px solid #E5E7EB',
