@@ -13,11 +13,11 @@ import { getScenarioParams } from './scenarios';
  * These are the target projections the model should produce
  */
 const PROJECTION_TABLE: Record<string, number[]> = {
-  min:      [0,    400,  1000, 1700, 2400, 3100],
-  downside: [0,    400,  1100, 2000, 3200, 4700],
-  base:     [200,  900,  2000, 3600, 5600, 8200],
-  upside:   [400,  1800, 4000, 6900, 10300, 13700],
-  max:      [700,  4400, 9800, 15200, 18700, 20400],
+  min:      [0,    400,  1000, 1700, 2400, 3100, 3800, 4400, 4900, 5300],
+  downside: [0,    400,  1100, 2000, 3200, 4700, 6200, 7500, 8600, 9500],
+  base:     [200,  900,  2000, 3600, 5600, 8200, 11000, 13800, 16500, 19000],
+  upside:   [400,  1800, 4000, 6900, 10300, 13700, 17000, 20000, 22500, 24500],
+  max:      [700,  4400, 9800, 15200, 18700, 20400, 21500, 22200, 22700, 23000],
 };
 
 /**
@@ -52,7 +52,7 @@ export function getSigmoidValue(scenario: string, year: number): number {
  *
  * @param scenario - Scenario name (max, upside, base, downside, min)
  * @param startYear - First year of projection (ignored, uses relative years)
- * @param years - Number of years to project (1-6)
+ * @param years - Number of years to project (1-10)
  * @returns Array of projected units per year
  */
 export function getAnnualProjections(

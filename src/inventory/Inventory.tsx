@@ -12,7 +12,7 @@ const SCENARIO_OPTIONS = [
 
 export function Inventory() {
   const { config, selectedScenario, setSelectedScenario, setConfig } = useInventoryStore();
-  const [years] = useState(6);
+  const [years] = useState(10);
 
   // Generate reorder schedule
   const reorderSchedule = useMemo(() => {

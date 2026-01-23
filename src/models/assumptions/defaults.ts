@@ -45,7 +45,7 @@ export const DEFAULT_CORPORATE: CorporateAssumptions = {
   taxRate: 0.25,
   discountRate: 0.12,
   terminalGrowthRate: 0.03,
-  projectionYears: 6,
+  projectionYears: 10,
 };
 
 export const DEFAULT_ASSUMPTIONS: AllAssumptions = {

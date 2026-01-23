@@ -294,6 +294,130 @@ export function calculateAllScenarios(
 }
 
 /**
+ * Calculate IRR using Newton-Raphson method
+ * 
+ * @param cashFlows - Array of cash flows (period 0 = initial investment, typically negative)
+ * @param maxIterations - Maximum iterations for convergence
+ * @returns IRR as decimal (e.g., 0.15 for 15%)
+ */
+export function calculateIRRSimple(cashFlows: number[], maxIterations = 100): number {
+  if (cashFlows.length < 2) return NaN;
+  
+  let rate = 0.1; // Initial guess 10%
+  
+  for (let i = 0; i < maxIterations; i++) {
+    let npv = 0;
+    let derivative = 0;
+    
+    for (let t = 0; t < cashFlows.length; t++) {
+      npv += cashFlows[t] / Math.pow(1 + rate, t);
+      if (t > 0) {
+        derivative -= t * cashFlows[t] / Math.pow(1 + rate, t + 1);
+      }
+    }
+    
+    if (Math.abs(derivative) < 1e-15) break;
+    
+    const newRate = rate - npv / derivative;
+    if (Math.abs(newRate - rate) < 0.0001) return newRate;
+    
+    // Bound rate to reasonable values
+    rate = Math.max(-0.99, Math.min(10, newRate));
+  }
+  
+  return rate;
+}
+
+/**
+ * Calculate NPV as of an effective date
+ * Allows calculating value at a point in time different from period 0
+ * 
+ * @param cashFlows - Array of cash flows (index = period)
+ * @param discountRate - Annual discount rate (decimal)
+ * @param effectiveDate - Date to calculate NPV as of
+ * @param startDate - Date of period 0 cash flow
+ * @returns NPV as of the effective date
+ */
+export function calculateNPVWithEffectiveDate(
+  cashFlows: number[],
+  discountRate: number,
+  effectiveDate: Date,
+  startDate: Date
+): number {
+  const msPerYear = 365.25 * 24 * 60 * 60 * 1000;
+  const yearsOffset = (effectiveDate.getTime() - startDate.getTime()) / msPerYear;
+  
+  let npv = 0;
+  for (let t = 0; t < cashFlows.length; t++) {
+    npv += cashFlows[t] / Math.pow(1 + discountRate, t - yearsOffset);
+  }
+  
+  return npv;
+}
+
+/**
+ * Calculate payback period (time to recover initial investment)
+ * 
+ * @param cashFlows - Array of cash flows (index 0 = initial investment, typically negative)
+ * @returns Payback period in years, or null if investment is never recovered
+ */
+export function calculatePaybackPeriod(cashFlows: number[]): number | null {
+  if (cashFlows.length === 0) return null;
+  
+  let cumulativeCashFlow = 0;
+  
+  for (let t = 0; t < cashFlows.length; t++) {
+    const previousCumulative = cumulativeCashFlow;
+    cumulativeCashFlow += cashFlows[t];
+    
+    // Check if we've crossed from negative to positive (or zero)
+    if (previousCumulative < 0 && cumulativeCashFlow >= 0) {
+      // Linear interpolation for fractional year
+      if (cashFlows[t] !== 0) {
+        const fractionOfYear = -previousCumulative / cashFlows[t];
+        return (t - 1) + fractionOfYear;
+      }
+      return t;
+    }
+  }
+  
+  // Investment never recovered
+  return null;
+}
+
+/**
+ * Calculate discounted payback period
+ * 
+ * @param cashFlows - Array of cash flows (index 0 = initial investment)
+ * @param discountRate - Annual discount rate (decimal)
+ * @returns Discounted payback period in years, or null if never recovered
+ */
+export function calculateDiscountedPaybackPeriod(
+  cashFlows: number[],
+  discountRate: number
+): number | null {
+  if (cashFlows.length === 0) return null;
+  
+  let cumulativePV = 0;
+  
+  for (let t = 0; t < cashFlows.length; t++) {
+    const previousCumulativePV = cumulativePV;
+    const pv = cashFlows[t] / Math.pow(1 + discountRate, t);
+    cumulativePV += pv;
+    
+    if (previousCumulativePV < 0 && cumulativePV >= 0) {
+      if (pv !== 0) {
+        const fractionOfYear = -previousCumulativePV / pv;
+        return (t - 1) + fractionOfYear;
+      }
+      return t;
+    }
+  }
+  
+  return null;
+}
+
+/**
  * Format currency for display
  */
 export function formatCurrency(value: number): string {

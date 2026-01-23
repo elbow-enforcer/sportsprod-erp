@@ -18,7 +18,7 @@ import { getAnnualProjections } from '../models/adoption'
 
 // Constants
 const REVENUE_PER_UNIT = 1000 // $1,000 per unit
-const YEARS = 6
+const YEARS = 10
 
 type ScenarioId = 'min' | 'downside' | 'base' | 'upside' | 'max'
 
