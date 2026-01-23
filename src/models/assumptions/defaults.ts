@@ -63,6 +63,10 @@ export const DEFAULT_CAPITAL: CapitalAssumptions = {
   startupExpenses: 150000,       // Pre-revenue startup costs
   investorCapital: 250000,       // Total investor capital raised
   firstManufacturingOrder: 200000, // Initial inventory purchase
+  
+  // Re-tooling
+  toolingCost: 50000,            // Re-tooling cost
+  retoolingYears: 5,             // Re-tooling cycle (years)
 };
 
 export const DEFAULT_CORPORATE: CorporateAssumptions = {
