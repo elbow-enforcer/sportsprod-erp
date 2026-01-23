@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { Layout } from './components/Layout/Layout'
 import { Dashboard } from './dashboard/Dashboard'
+import { Projections } from './projections'
 import { Marketing, LaunchPlan, EmailSequences, Campaigns, MarketingAnalytics } from './marketing'
 
 // Placeholder pages for other routes
@@ -31,7 +32,7 @@ function App() {
           path="/projections"
           element={
             <Layout title="Projections">
-              <PlaceholderPage title="Projections" />
+              <Projections />
             </Layout>
           }
         />
