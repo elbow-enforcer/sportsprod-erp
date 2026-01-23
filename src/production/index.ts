@@ -58,3 +58,4 @@ export {
 
 // Components
 export { BOMList } from './BOMList';
+export { BOMDetail } from './BOMDetail';
