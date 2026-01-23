@@ -51,6 +51,10 @@ export interface CapitalAssumptions {
   startupExpenses: number;       // Pre-revenue startup costs (~$150k)
   investorCapital: number;       // Total investor capital raised ($200-300k)
   firstManufacturingOrder: number; // Initial inventory purchase ($200k)
+  
+  // Re-tooling
+  toolingCost: number;           // Default $50,000
+  retoolingYears: number;        // Default 5 years
 }
 
 export type EntityType = 'c_corp' | 's_corp' | 'llc' | 'partnership' | 'sole_prop';
