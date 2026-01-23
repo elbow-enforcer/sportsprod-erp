@@ -6,7 +6,11 @@ const navItems = [
   { path: '/projections', label: 'Projections', icon: '📈' },
   { path: '/revenue', label: 'Revenue', icon: '💰' },
   { path: '/costs', label: 'Costs', icon: '💸' },
+]
+
+const capitalItems = [
   { path: '/capital', label: 'Capital', icon: '🏦' },
+  { path: '/inventory', label: 'Inventory', icon: '📦' },
 ]
 
 const marketingItems = [
@@ -57,6 +61,32 @@ export function Sidebar() {
         {/* Navigation */}
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
           {navItems.map((item) => (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              className={({ isActive }) =>
+                `flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
+                  isActive
+                    ? 'bg-blue-600 text-white'
+                    : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                }`
+              }
+            >
+              <span className="text-xl">{item.icon}</span>
+              {!collapsed && <span>{item.label}</span>}
+            </NavLink>
+          ))}
+
+          {/* Capital Section */}
+          {!collapsed && (
+            <div className="pt-4 mt-4 border-t border-slate-700">
+              <p className="px-3 mb-2 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                Capital
+              </p>
+            </div>
+          )}
+          {collapsed && <div className="pt-4 mt-4 border-t border-slate-700" />}
+          {capitalItems.map((item) => (
             <NavLink
               key={item.path}
               to={item.path}
