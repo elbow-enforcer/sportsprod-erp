@@ -75,18 +75,26 @@ describe('getMonthlyProjections', () => {
     });
   });
 
-  it('should increase monthly with positive growth rate', () => {
+  it('should apply seasonality with positive factor (peak in Q3)', () => {
     const monthly = getMonthlyProjections(12000, 0.05);
-    for (let i = 1; i < monthly.length; i++) {
-      expect(monthly[i]).toBeGreaterThan(monthly[i - 1]);
-    }
+    // With sine wave seasonality, values vary but sum to annual
+    const sum = monthly.reduce((a, b) => a + b, 0);
+    expect(sum).toBeCloseTo(12000, 0);
+    // Peak should be around August (index 7)
+    const maxMonth = monthly.indexOf(Math.max(...monthly));
+    expect(maxMonth).toBeGreaterThanOrEqual(5);
+    expect(maxMonth).toBeLessThanOrEqual(9);
   });
 
-  it('should decrease monthly with negative growth rate', () => {
+  it('should apply inverted seasonality with negative factor', () => {
     const monthly = getMonthlyProjections(12000, -0.05);
-    for (let i = 1; i < monthly.length; i++) {
-      expect(monthly[i]).toBeLessThan(monthly[i - 1]);
-    }
+    // With negative seasonality, pattern inverts
+    const sum = monthly.reduce((a, b) => a + b, 0);
+    expect(sum).toBeCloseTo(12000, 0);
+    // Trough should be around summer months
+    const minMonth = monthly.indexOf(Math.min(...monthly));
+    expect(minMonth).toBeGreaterThanOrEqual(5);
+    expect(minMonth).toBeLessThanOrEqual(9);
   });
 });
 
