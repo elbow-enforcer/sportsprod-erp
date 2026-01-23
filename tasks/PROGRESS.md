@@ -19,16 +19,35 @@
   - 12 raw materials, 6 BOMs, 10 work orders, 6 production runs
   - Historical data generators for dashboard charts
 
-## Sprint 2: Bill of Materials UI (In Progress)
+## Sprint 2: Bill of Materials UI ✅ COMPLETE
+
+- **US-2.1: BOM List Page** ✅ (2026-01-23 ~01:00)
+  - Created `src/production/BOMList.tsx` with full table view
+  - Sorting by any column, search filter, active/inactive toggle
+  - Summary stats and navigation to detail views
+
+- **US-2.2: BOM Detail/Edit Page** ✅ (2026-01-23 ~01:15)
+  - Created `src/production/BOMDetail.tsx` for create/edit BOMs
+  - Component management with add/remove rows
+  - Labor, overhead, and total cost calculations
+  - Version history sidebar, form validation
+
+- **US-2.3: BOM Cost Breakdown Chart** ✅ (2026-01-23 ~01:25)
+  - Created `src/production/BOMCostChart.tsx` with visual analysis
+  - Donut chart for cost distribution
+  - Bar chart for cost by material
+  - Margin analysis with different markup scenarios
+
+## Sprint 3: Work Orders (In Progress)
 
 ## In Progress
-- **US-2.1: BOM List Page** (starting now)
+- **US-3.1: Work Order List Page** (starting now)
 
 ## Blocked
 *None*
 
 ## PRs Created
-- Sprint 1 PR pending...
+- Sprint 1 PR #115 ✅
 
 ## Notes
 - PRD created: Production & Manufacturing Module
