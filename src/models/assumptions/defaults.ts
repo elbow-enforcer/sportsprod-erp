@@ -46,6 +46,8 @@ export const DEFAULT_CORPORATE: CorporateAssumptions = {
   discountRate: 0.12,
   terminalGrowthRate: 0.03,
   projectionYears: 10,
+  effectiveDate: new Date().toISOString().split('T')[0],  // Today's date
+  investmentLockInDate: '2024-01-01',  // Default investment lock-in date
 };
 
 export const DEFAULT_ASSUMPTIONS: AllAssumptions = {
