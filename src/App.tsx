@@ -9,6 +9,7 @@ import { Inventory } from './inventory'
 import { Pricing } from './pricing'
 import { AllAssumptions } from './assumptions'
 import { Valuation } from './valuation'
+import { InvestorCohorts } from './investors'
 import { AuthProvider, ProtectedRoute, LoginPage, RoleSelector, PermissionGate } from './auth'
 
 // Placeholder pages for other routes
@@ -135,6 +136,18 @@ function App() {
                 <PermissionGate permission="view:dcf" fallback={<AccessDenied />}>
                   <Layout title="Model Assumptions">
                     <AllAssumptions />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/investors"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:dcf" fallback={<AccessDenied />}>
+                  <Layout title="Investor Cohorts">
+                    <InvestorCohorts />
                   </Layout>
                 </PermissionGate>
               </ProtectedRoute>

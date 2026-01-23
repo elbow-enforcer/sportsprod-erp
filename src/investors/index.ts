@@ -1,0 +1,1 @@
+export { InvestorCohorts } from './InvestorCohorts';

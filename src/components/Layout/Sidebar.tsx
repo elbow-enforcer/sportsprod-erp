@@ -19,6 +19,7 @@ const navItems: NavItem[] = [
 const valuationItems: NavItem[] = [
   { path: '/valuation', label: 'DCF Valuation', icon: '📉', permission: 'view:dcf' },
   { path: '/assumptions', label: 'Assumptions', icon: '⚙️', permission: 'view:dcf' },
+  { path: '/investors', label: 'Investor Cohorts', icon: '👥', permission: 'view:dcf' },
 ]
 
 const capitalItems: NavItem[] = [
