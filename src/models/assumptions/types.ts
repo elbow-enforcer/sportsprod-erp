@@ -1,4 +1,5 @@
 export interface RevenueAssumptions {
+  basePrice: number;             // Default $1,000 (base price for calculations)
   pricePerUnit: number;          // Default $1,000
   annualPriceIncrease: number;   // Default 0% (or 2-3%)
   discountRate: number;          // Default 5% (returns/discounts)

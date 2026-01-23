@@ -20,6 +20,9 @@ interface AssumptionsActions {
   updateCapital: (updates: Partial<CapitalAssumptions>) => void;
   updateCorporate: (updates: Partial<CorporateAssumptions>) => void;
   updateExit: (updates: Partial<ExitAssumptions>) => void;
+  updateDiscountTiers: (updates: Partial<DiscountTiersAssumptions>) => void;
+  updateTierDiscount: (accountType: AccountType, discount: number) => void;
+  toggleWholesaler: () => void;
   resetRevenue: () => void;
   resetCOGS: () => void;
   resetMarketing: () => void;
@@ -27,7 +30,9 @@ interface AssumptionsActions {
   resetCapital: () => void;
   resetCorporate: () => void;
   resetExit: () => void;
+  resetDiscountTiers: () => void;
   resetToDefaults: () => void;
+  getDiscountForAccountType: (accountType: AccountType) => number;
   exportAsJSON: () => string;
   exportAsCSV: () => string;
 }
@@ -122,6 +127,56 @@ export const useAssumptionsStore = create<AssumptionsStore>()(
           exit: DEFAULT_ASSUMPTIONS.exit,
           lastModified: new Date().toISOString(),
         })),
+
+      updateDiscountTiers: (updates) =>
+        set((state) => ({
+          discountTiers: { ...state.discountTiers, ...updates },
+          lastModified: new Date().toISOString(),
+        })),
+
+      updateTierDiscount: (accountType, discount) =>
+        set((state) => ({
+          discountTiers: {
+            ...state.discountTiers,
+            tiers: state.discountTiers.tiers.map((tier) =>
+              tier.accountType === accountType
+                ? { ...tier, discount: Math.max(0, Math.min(100, discount)) }
+                : tier
+            ),
+          },
+          lastModified: new Date().toISOString(),
+        })),
+
+      toggleWholesaler: () =>
+        set((state) => {
+          const newEnabled = !state.discountTiers.wholesalerEnabled;
+          return {
+            discountTiers: {
+              ...state.discountTiers,
+              wholesalerEnabled: newEnabled,
+              tiers: state.discountTiers.tiers.map((tier) =>
+                tier.accountType === 'wholesaler'
+                  ? { ...tier, enabled: newEnabled }
+                  : tier
+              ),
+            },
+            lastModified: new Date().toISOString(),
+          };
+        }),
+
+      resetDiscountTiers: () =>
+        set({
+          discountTiers: DEFAULT_ASSUMPTIONS.discountTiers,
+          lastModified: new Date().toISOString(),
+        }),
+
+      getDiscountForAccountType: (accountType) => {
+        const state = get();
+        const tier = state.discountTiers.tiers.find((t) => t.accountType === accountType);
+        if (!tier || !tier.enabled) return 0;
+        if (accountType === 'wholesaler' && !state.discountTiers.wholesalerEnabled) return 0;
+        return tier.discount;
+      },
 
       resetToDefaults: () =>
         set({

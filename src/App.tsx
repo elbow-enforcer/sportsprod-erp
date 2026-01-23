@@ -3,7 +3,7 @@ import { Layout } from './components/Layout/Layout'
 import { Dashboard } from './dashboard/Dashboard'
 import { Projections } from './projections'
 import { Costs } from './costs'
-import { Revenue } from './revenue'
+import { Revenue, RevenueByScenario } from './revenue'
 import { Marketing, LaunchPlan, EmailSequences, Campaigns, MarketingAnalytics, CACDashboard, ReferralProgram, VideoPlaybook, VideoIdeasBank, CompetitorResearch, VideoBriefTemplate } from './marketing'
 import { PreorderSettings } from './preorder'
 import { DepositConfiguration } from './preorder'
@@ -98,6 +98,18 @@ function App() {
                 <PermissionGate permission="view:revenue" fallback={<AccessDenied />}>
                   <Layout title="Revenue">
                     <Revenue />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/revenue/scenarios"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:revenue" fallback={<AccessDenied />}>
+                  <Layout title="Revenue by Scenario">
+                    <RevenueByScenario />
                   </Layout>
                 </PermissionGate>
               </ProtectedRoute>
