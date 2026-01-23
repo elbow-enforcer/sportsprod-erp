@@ -10,6 +10,7 @@ import type {
 } from './types';
 
 export const DEFAULT_REVENUE: RevenueAssumptions = {
+  basePrice: 1000,
   pricePerUnit: 1000,
   annualPriceIncrease: 0,
   discountRate: 0.05,
