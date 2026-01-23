@@ -6,6 +6,7 @@ import type {
   GNAAssumptions,
   CapitalAssumptions,
   CorporateAssumptions,
+  ExitAssumptions,
 } from './types';
 
 export const DEFAULT_REVENUE: RevenueAssumptions = {
@@ -50,6 +51,14 @@ export const DEFAULT_CORPORATE: CorporateAssumptions = {
   investmentLockInDate: '2024-01-01',  // Default investment lock-in date
 };
 
+export const DEFAULT_EXIT: ExitAssumptions = {
+  method: 'exitMultiple',        // Use exit multiple by default
+  exitEbitdaMultiple: 8,         // 8x EBITDA (range 4x-12x)
+  exitRevenueMultiple: 2,        // 2x Revenue (range 1x-3x)
+  exitYear: 10,                  // Exit at Year 10
+  useEbitdaMultiple: true,       // Use EBITDA multiple by default
+};
+
 export const DEFAULT_ASSUMPTIONS: AllAssumptions = {
   revenue: DEFAULT_REVENUE,
   cogs: DEFAULT_COGS,
@@ -57,6 +66,7 @@ export const DEFAULT_ASSUMPTIONS: AllAssumptions = {
   gna: DEFAULT_GNA,
   capital: DEFAULT_CAPITAL,
   corporate: DEFAULT_CORPORATE,
+  exit: DEFAULT_EXIT,
   version: 'v1.0',
   lastModified: new Date().toISOString(),
 };

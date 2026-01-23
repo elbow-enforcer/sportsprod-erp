@@ -40,6 +40,14 @@ export interface CorporateAssumptions {
   investmentLockInDate: string;  // ISO date when investment was locked in
 }
 
+export interface ExitAssumptions {
+  method: 'gordon' | 'exitMultiple';  // Terminal value method
+  exitEbitdaMultiple: number;    // Default 8x (range 4x-12x for scenarios)
+  exitRevenueMultiple: number;   // Default 2x (range 1x-3x for scenarios)
+  exitYear: number;              // Default = projectionYears (Year 10)
+  useEbitdaMultiple: boolean;    // true = EBITDA multiple, false = Revenue multiple
+}
+
 export interface AllAssumptions {
   revenue: RevenueAssumptions;
   cogs: COGSAssumptions;
@@ -47,6 +55,7 @@ export interface AllAssumptions {
   gna: GNAAssumptions;
   capital: CapitalAssumptions;
   corporate: CorporateAssumptions;
+  exit: ExitAssumptions;
   version: string;               // e.g., "v1.0"
   lastModified: string;          // ISO date
 }

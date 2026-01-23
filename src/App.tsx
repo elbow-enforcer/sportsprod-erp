@@ -7,7 +7,7 @@ import { Revenue } from './revenue'
 import { Marketing, LaunchPlan, EmailSequences, Campaigns, MarketingAnalytics, ReferralProgram } from './marketing'
 import { Inventory } from './inventory'
 import { Pricing } from './pricing'
-import { Assumptions } from './assumptions'
+import { AllAssumptions } from './assumptions'
 import { Valuation } from './valuation'
 import { AuthProvider, ProtectedRoute, LoginPage, RoleSelector, PermissionGate } from './auth'
 
@@ -133,8 +133,8 @@ function App() {
             element={
               <ProtectedRoute>
                 <PermissionGate permission="view:dcf" fallback={<AccessDenied />}>
-                  <Layout title="Assumptions">
-                    <Assumptions />
+                  <Layout title="Model Assumptions">
+                    <AllAssumptions />
                   </Layout>
                 </PermissionGate>
               </ProtectedRoute>

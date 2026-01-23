@@ -8,6 +8,7 @@ import type {
   GNAAssumptions,
   CapitalAssumptions,
   CorporateAssumptions,
+  ExitAssumptions,
 } from '../models/assumptions';
 import { DEFAULT_ASSUMPTIONS } from '../models/assumptions';
 
@@ -18,14 +19,17 @@ interface AssumptionsActions {
   updateGNA: (updates: Partial<GNAAssumptions>) => void;
   updateCapital: (updates: Partial<CapitalAssumptions>) => void;
   updateCorporate: (updates: Partial<CorporateAssumptions>) => void;
+  updateExit: (updates: Partial<ExitAssumptions>) => void;
   resetRevenue: () => void;
   resetCOGS: () => void;
   resetMarketing: () => void;
   resetGNA: () => void;
   resetCapital: () => void;
   resetCorporate: () => void;
+  resetExit: () => void;
   resetToDefaults: () => void;
   exportAsJSON: () => string;
+  exportAsCSV: () => string;
 }
 
 type AssumptionsStore = AllAssumptions & AssumptionsActions;
@@ -107,6 +111,18 @@ export const useAssumptionsStore = create<AssumptionsStore>()(
           lastModified: new Date().toISOString(),
         })),
 
+      updateExit: (updates) =>
+        set((state) => ({
+          exit: { ...state.exit, ...updates },
+          lastModified: new Date().toISOString(),
+        })),
+
+      resetExit: () =>
+        set((state) => ({
+          exit: DEFAULT_ASSUMPTIONS.exit,
+          lastModified: new Date().toISOString(),
+        })),
+
       resetToDefaults: () =>
         set({
           ...DEFAULT_ASSUMPTIONS,
@@ -122,10 +138,58 @@ export const useAssumptionsStore = create<AssumptionsStore>()(
           gna: state.gna,
           capital: state.capital,
           corporate: state.corporate,
+          exit: state.exit,
           version: state.version,
           lastModified: state.lastModified,
         };
         return JSON.stringify(exportData, null, 2);
+      },
+
+      exportAsCSV: () => {
+        const state = get();
+        const rows: string[] = ['Category,Parameter,Value'];
+        
+        // Revenue
+        rows.push(`Revenue,Price per Unit,$${state.revenue.pricePerUnit}`);
+        rows.push(`Revenue,Annual Price Increase,${(state.revenue.annualPriceIncrease * 100).toFixed(1)}%`);
+        rows.push(`Revenue,Discount Rate,${(state.revenue.discountRate * 100).toFixed(1)}%`);
+        
+        // COGS
+        rows.push(`COGS,Unit Cost,$${state.cogs.unitCost}`);
+        rows.push(`COGS,Cost Reduction/Year,${(state.cogs.costReductionPerYear * 100).toFixed(1)}%`);
+        rows.push(`COGS,Shipping per Unit,$${state.cogs.shippingPerUnit}`);
+        
+        // Marketing
+        rows.push(`Marketing,Base Budget,$${state.marketing.baseBudget}`);
+        rows.push(`Marketing,% of Revenue,${(state.marketing.percentOfRevenue * 100).toFixed(1)}%`);
+        rows.push(`Marketing,CAC Target,$${state.marketing.cacTarget}`);
+        
+        // G&A
+        rows.push(`G&A,Base Headcount,${state.gna.baseHeadcount}`);
+        rows.push(`G&A,Avg Salary,$${state.gna.avgSalary}`);
+        rows.push(`G&A,Salary Growth Rate,${(state.gna.salaryGrowthRate * 100).toFixed(1)}%`);
+        rows.push(`G&A,Benefits Multiplier,${state.gna.benefitsMultiplier}x`);
+        rows.push(`G&A,Office & Ops,$${state.gna.officeAndOps}`);
+        
+        // Capital
+        rows.push(`Capital,Initial Investment,$${state.capital.initialInvestment}`);
+        rows.push(`Capital,Working Capital %,${(state.capital.workingCapitalPercent * 100).toFixed(1)}%`);
+        rows.push(`Capital,CapEx Year 1,$${state.capital.capexYear1}`);
+        rows.push(`Capital,CapEx Growth Rate,${(state.capital.capexGrowthRate * 100).toFixed(1)}%`);
+        
+        // Corporate
+        rows.push(`Corporate,Tax Rate,${(state.corporate.taxRate * 100).toFixed(1)}%`);
+        rows.push(`Corporate,Discount Rate (WACC),${(state.corporate.discountRate * 100).toFixed(1)}%`);
+        rows.push(`Corporate,Terminal Growth Rate,${(state.corporate.terminalGrowthRate * 100).toFixed(1)}%`);
+        rows.push(`Corporate,Projection Years,${state.corporate.projectionYears}`);
+        
+        // Exit
+        rows.push(`Exit,Method,${state.exit.method}`);
+        rows.push(`Exit,EBITDA Multiple,${state.exit.exitEbitdaMultiple}x`);
+        rows.push(`Exit,Revenue Multiple,${state.exit.exitRevenueMultiple}x`);
+        rows.push(`Exit,Exit Year,Year ${state.exit.exitYear}`);
+        
+        return rows.join('\n');
       },
     }),
     {

@@ -5,6 +5,7 @@ export type {
   GNAAssumptions,
   CapitalAssumptions,
   CorporateAssumptions,
+  ExitAssumptions,
   AllAssumptions,
 } from './types';
 
@@ -15,5 +16,6 @@ export {
   DEFAULT_GNA,
   DEFAULT_CAPITAL,
   DEFAULT_CORPORATE,
+  DEFAULT_EXIT,
   DEFAULT_ASSUMPTIONS,
 } from './defaults';
