@@ -28,6 +28,7 @@ const marketingItems: NavItem[] = [
   { path: '/marketing/email', label: 'Email Sequences', icon: '📧', permission: 'view:marketing' },
   { path: '/marketing/campaigns', label: 'Campaigns', icon: '🎯', permission: 'view:marketing' },
   { path: '/marketing/analytics', label: 'Analytics', icon: '📊', permission: 'view:marketing' },
+  { path: '/marketing/referrals', label: 'Referrals', icon: '🤝', permission: 'view:marketing' },
 ]
 
 function NavItemLink({ item, collapsed }: { item: NavItem; collapsed: boolean }) {

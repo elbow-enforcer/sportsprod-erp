@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { Layout } from './components/Layout/Layout'
 import { Dashboard } from './dashboard/Dashboard'
 import { Projections } from './projections'
-import { Marketing, LaunchPlan, EmailSequences, Campaigns, MarketingAnalytics } from './marketing'
+import { Marketing, LaunchPlan, EmailSequences, Campaigns, MarketingAnalytics, ReferralProgram } from './marketing'
 import { Inventory } from './inventory'
 import { Pricing } from './pricing'
 import { AuthProvider, ProtectedRoute, LoginPage, RoleSelector, PermissionGate } from './auth'
@@ -167,6 +167,18 @@ function App() {
                 <PermissionGate permission="view:marketing" fallback={<AccessDenied />}>
                   <Layout title="Marketing Analytics">
                     <MarketingAnalytics />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/marketing/referrals"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:marketing" fallback={<AccessDenied />}>
+                  <Layout title="Referral Program">
+                    <ReferralProgram />
                   </Layout>
                 </PermissionGate>
               </ProtectedRoute>
