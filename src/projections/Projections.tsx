@@ -13,7 +13,7 @@ const REVENUE_PER_UNIT = 1000 // $1,000 per unit
 const MARKETING_PERCENT = 0.15 // 15% of revenue
 const GNA_BASE = 200000 // $200K base G&A
 const GNA_GROWTH_RATE = 0.10 // 10% annual G&A growth
-const YEARS = 6
+const YEARS = 10
 
 type ScenarioId = 'min' | 'downside' | 'base' | 'upside' | 'max'
 
@@ -167,13 +167,13 @@ export function Projections() {
       {/* Summary KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <KPICard
-          title="6-Year Total Revenue"
+          title="10-Year Total Revenue"
           value={formatCurrency(totalRevenue, true)}
           icon={<span className="text-2xl">💰</span>}
           subtitle="Cumulative projected"
         />
         <KPICard
-          title="6-Year Total Units"
+          title="10-Year Total Units"
           value={formatUnits(totalUnits)}
           icon={<span className="text-2xl">📦</span>}
           subtitle="Cumulative projected"
@@ -218,7 +218,7 @@ export function Projections() {
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-100">
           <h3 className="text-lg font-semibold text-gray-900">
-            {compareMode ? 'Scenario Comparison' : '6-Year Financial Projections'}
+            {compareMode ? 'Scenario Comparison' : '10-Year Financial Projections'}
           </h3>
           <p className="text-sm text-gray-500 mt-1">
             {compareMode
@@ -421,7 +421,7 @@ function ScenarioComparisonTable({
           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
             Scenario
           </th>
-          {[1, 2, 3, 4, 5, 6].map((year) => (
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((year) => (
             <th
               key={year}
               className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"

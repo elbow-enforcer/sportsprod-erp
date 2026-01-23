@@ -17,10 +17,14 @@ interface RevenueChartProps {
 const revenueData = [
   { year: 'Year 1', min: 0, downside: 0, base: 200, upside: 400, max: 700 },
   { year: 'Year 2', min: 400, downside: 400, base: 900, upside: 1800, max: 4400 },
-  { year: 'Year 3', min: 1100, downside: 1400, base: 2600, upside: 4600, max: 9100 },
-  { year: 'Year 4', min: 1800, downside: 2600, base: 4700, upside: 8000, max: 13700 },
-  { year: 'Year 5', min: 2500, downside: 3700, base: 6500, upside: 11000, max: 17200 },
+  { year: 'Year 3', min: 1000, downside: 1100, base: 2000, upside: 4000, max: 9800 },
+  { year: 'Year 4', min: 1700, downside: 2000, base: 3600, upside: 6900, max: 15200 },
+  { year: 'Year 5', min: 2400, downside: 3200, base: 5600, upside: 10300, max: 18700 },
   { year: 'Year 6', min: 3100, downside: 4700, base: 8200, upside: 13700, max: 20400 },
+  { year: 'Year 7', min: 3800, downside: 6200, base: 11000, upside: 17000, max: 21500 },
+  { year: 'Year 8', min: 4400, downside: 7500, base: 13800, upside: 20000, max: 22200 },
+  { year: 'Year 9', min: 4900, downside: 8600, base: 16500, upside: 22500, max: 22700 },
+  { year: 'Year 10', min: 5300, downside: 9500, base: 19000, upside: 24500, max: 23000 },
 ];
 
 const scenarioConfig: Record<string, { color: string; name: string }> = {

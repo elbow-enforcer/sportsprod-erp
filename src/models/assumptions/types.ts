@@ -35,7 +35,9 @@ export interface CorporateAssumptions {
   taxRate: number;               // Default 25%
   discountRate: number;          // Default 12% (WACC)
   terminalGrowthRate: number;    // Default 3%
-  projectionYears: number;       // Default 6
+  projectionYears: number;       // Default 10
+  effectiveDate: string;         // ISO date for NPV calculation reference
+  investmentLockInDate: string;  // ISO date when investment was locked in
 }
 
 export interface AllAssumptions {
