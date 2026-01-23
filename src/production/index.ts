@@ -60,3 +60,4 @@ export {
 export { BOMList } from './BOMList';
 export { BOMDetail } from './BOMDetail';
 export { BOMCostChart } from './BOMCostChart';
+export { WorkOrderList } from './WorkOrderList';
