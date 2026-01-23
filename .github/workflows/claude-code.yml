@@ -20,6 +20,7 @@ jobs:
       contents: read
       pull-requests: write
       issues: write
+      id-token: write
     
     steps:
       - name: Claude Code Review
@@ -29,7 +30,6 @@ jobs:
           model: claude-sonnet-4-20250514
           timeout_minutes: 10
           
-          # Custom instructions for review
           custom_instructions: |
             You are a senior engineering manager reviewing this PR.
             
