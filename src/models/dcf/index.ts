@@ -6,6 +6,7 @@
  * - Net Present Value (NPV) calculation
  * - Internal Rate of Return (IRR) calculation
  * - Terminal Value (Gordon Growth & Exit Multiple)
+ * - Full DCF Valuation Calculator
  */
 
 // Type exports
@@ -21,6 +22,12 @@ export type {
   TerminalValueResult,
   DCFValuation,
 } from './types';
+
+// Calculator type exports
+export type {
+  YearlyProjection,
+  DCFResult,
+} from './calculator';
 
 // FCF exports
 export {
@@ -51,6 +58,14 @@ export {
   calculateImpliedMultiple,
   calculateImpliedGrowthRate,
 } from './terminal';
+
+// DCF Calculator exports
+export {
+  calculateDCF,
+  calculateAllScenarios,
+  formatCurrency,
+  getValuationSummary,
+} from './calculator';
 
 // Re-export types namespace for convenience
 import * as types from './types';
