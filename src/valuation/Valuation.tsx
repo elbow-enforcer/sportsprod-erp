@@ -19,6 +19,8 @@ import {
   calculateFCF,
   calculateNPV,
   calculateTerminalValue,
+  calculateIRRSimple,
+  calculatePaybackPeriod,
   type DCFValuation,
 } from '../models/dcf';
 
@@ -578,6 +580,42 @@ export function Valuation() {
   const evEbitdaMultiple = valuation.enterpriseValue / finalYearEBITDA;
   const tvContribution = (valuation.pvOfTerminalValue / valuation.enterpriseValue) * 100;
   
+  // Calculate IRR and Payback Period
+  const cashFlowsForIRR = useMemo(() => {
+    // Initial investment (negative), then yearly FCFs, then terminal value in final year
+    const initialInvestment = -(capital.capexYear1 + capital.workingCapitalPercent * valuation.yearlyData[0]?.revenue || 0);
+    const fcfs = valuation.yearlyData.map((y, i) => 
+      i === valuation.yearlyData.length - 1 
+        ? y.fcf + valuation.terminalValue / Math.pow(1 + corporate.discountRate, i + 1) * Math.pow(1 + corporate.discountRate, i + 1)
+        : y.fcf
+    );
+    return [initialInvestment, ...fcfs];
+  }, [valuation, capital, corporate.discountRate]);
+  
+  const irr = useMemo(() => {
+    try {
+      return calculateIRRSimple(cashFlowsForIRR);
+    } catch {
+      return null;
+    }
+  }, [cashFlowsForIRR]);
+  
+  const paybackPeriod = useMemo(() => {
+    const fcfs = valuation.yearlyData.map(y => y.fcf);
+    const initialInvestment = Math.abs(cashFlowsForIRR[0]);
+    let cumulative = -initialInvestment;
+    for (let i = 0; i < fcfs.length; i++) {
+      cumulative += fcfs[i];
+      if (cumulative >= 0) {
+        // Interpolate for partial year
+        const prevCumulative = cumulative - fcfs[i];
+        const fraction = Math.abs(prevCumulative) / fcfs[i];
+        return i + fraction;
+      }
+    }
+    return null; // Never pays back
+  }, [valuation, cashFlowsForIRR]);
+  
   return (
     <div className="space-y-6">
       {/* Scenario Banner */}
@@ -591,12 +629,24 @@ export function Valuation() {
       )}
 
       {/* Valuation Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
         <KPICard
           title="Enterprise Value"
           value={formatCurrency(valuation.enterpriseValue)}
           icon={<span className="text-2xl">💎</span>}
           subtitle="DCF Valuation"
+        />
+        <KPICard
+          title="IRR"
+          value={irr !== null ? `${(irr * 100).toFixed(1)}%` : 'N/A'}
+          icon={<span className="text-2xl">📈</span>}
+          subtitle={irr !== null && irr > corporate.discountRate ? '✓ Above WACC' : 'Below WACC'}
+        />
+        <KPICard
+          title="Payback Period"
+          value={paybackPeriod !== null ? `${paybackPeriod.toFixed(1)} yrs` : 'N/A'}
+          icon={<span className="text-2xl">⏱️</span>}
+          subtitle="Time to Recover Investment"
         />
         <KPICard
           title="EV / Revenue"

@@ -63,6 +63,10 @@ export {
 export {
   calculateDCF,
   calculateAllScenarios,
+  calculateIRRSimple,
+  calculateNPVWithEffectiveDate,
+  calculatePaybackPeriod,
+  calculateDiscountedPaybackPeriod,
   formatCurrency,
   getValuationSummary,
 } from './calculator';
