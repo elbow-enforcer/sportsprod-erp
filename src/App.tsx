@@ -226,6 +226,30 @@ function App() {
             }
           />
           <Route
+            path="/marketing/playbook"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:marketing" fallback={<AccessDenied />}>
+                  <Layout title="Video Playbook">
+                    <VideoPlaybook />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/marketing/ideas"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:marketing" fallback={<AccessDenied />}>
+                  <Layout title="Video Ideas Bank">
+                    <VideoIdeasBank />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/pricing"
             element={
               <Layout title="Pricing">

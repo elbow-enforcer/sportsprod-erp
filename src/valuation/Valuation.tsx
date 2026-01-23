@@ -12,6 +12,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { KPICard } from '../components/KPICard';
+import { CashFlowWaterfall } from '../components/charts/CashFlowWaterfall';
 import { useAssumptionsStore } from '../stores/assumptionsStore';
 import { useScenarioStore } from '../stores/scenarioStore';
 import { getAnnualProjections } from '../models/adoption';
@@ -693,6 +694,56 @@ export function Valuation() {
               {formatCurrency(valuation.enterpriseValue)}
             </p>
             <p className="text-sm text-blue-600 mt-1">Enterprise Value</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Cash Flow Waterfall Chart */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          Cash Flow Waterfall (Year {corporate.projectionYears})
+        </h3>
+        <p className="text-sm text-gray-500 mb-4">
+          Breakdown of cash flow components for the final projection year
+        </p>
+        <div className="h-80">
+          <CashFlowWaterfall
+            startingCash={valuation.yearlyData[corporate.projectionYears - 1]?.ebitda || 0}
+            operatingCashFlow={-(valuation.yearlyData[corporate.projectionYears - 1]?.taxes || 0)}
+            capex={valuation.yearlyData[corporate.projectionYears - 1]?.capex || 0}
+            workingCapitalChange={valuation.yearlyData[corporate.projectionYears - 1]?.wcChange || 0}
+          />
+        </div>
+        <div className="mt-4 grid grid-cols-2 md:grid-cols-5 gap-3 text-center">
+          <div className="p-2 bg-blue-50 rounded">
+            <p className="text-xs text-gray-500">EBITDA</p>
+            <p className="font-semibold text-blue-700">
+              {formatCurrency(valuation.yearlyData[corporate.projectionYears - 1]?.ebitda || 0)}
+            </p>
+          </div>
+          <div className="p-2 bg-red-50 rounded">
+            <p className="text-xs text-gray-500">Taxes</p>
+            <p className="font-semibold text-red-600">
+              -{formatCurrency(valuation.yearlyData[corporate.projectionYears - 1]?.taxes || 0)}
+            </p>
+          </div>
+          <div className="p-2 bg-red-50 rounded">
+            <p className="text-xs text-gray-500">CapEx</p>
+            <p className="font-semibold text-red-600">
+              -{formatCurrency(valuation.yearlyData[corporate.projectionYears - 1]?.capex || 0)}
+            </p>
+          </div>
+          <div className="p-2 bg-red-50 rounded">
+            <p className="text-xs text-gray-500">WC Change</p>
+            <p className="font-semibold text-red-600">
+              -{formatCurrency(valuation.yearlyData[corporate.projectionYears - 1]?.wcChange || 0)}
+            </p>
+          </div>
+          <div className="p-2 bg-green-50 rounded">
+            <p className="text-xs text-gray-500">Free Cash Flow</p>
+            <p className="font-semibold text-green-700">
+              {formatCurrency(valuation.yearlyData[corporate.projectionYears - 1]?.fcf || 0)}
+            </p>
           </div>
         </div>
       </div>
