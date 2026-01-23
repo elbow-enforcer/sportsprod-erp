@@ -2,11 +2,13 @@
  * Promotional code system for tracking discounts by channel
  */
 
+export type MarketingChannel = 'pt' | 'doctor' | 'influencer' | 'ad' | 'organic';
+
 export interface PromoCode {
   code: string;
   discountType: 'percent' | 'fixed';
   discountValue: number;
-  channel: string;
+  channel: MarketingChannel;
   expiresAt?: Date;
   maxUses?: number;
   usedCount: number;
