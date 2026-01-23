@@ -14,6 +14,7 @@ import { Valuation, ValuationSummary } from './valuation'
 import { InvestorCohorts } from './investors'
 import { AuthProvider, ProtectedRoute, LoginPage, RoleSelector, PermissionGate } from './auth'
 import { SupplierList, SupplierDetail, PurchaseOrderList, PurchaseOrderDetail, Receiving, VendorComparison } from './supply-chain'
+import { BidList, BidDetail } from './bids'
 import { CustomerList, CustomerDetail, QuoteList, QuoteDetail, SalesOrderList, SalesOrderDetail, Fulfillment } from './sales'
 import {
   ProductionDashboard,
@@ -462,6 +463,32 @@ function App() {
                 <PermissionGate permission="view:supply-chain" fallback={<AccessDenied />}>
                   <Layout title="Vendor Comparison">
                     <VendorComparison />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          
+          {/* Bids / Manufacturer Quotes Routes */}
+          <Route
+            path="/bids"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:supply-chain" fallback={<AccessDenied />}>
+                  <Layout title="Manufacturer Quotes">
+                    <BidList />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/bids/:id"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:supply-chain" fallback={<AccessDenied />}>
+                  <Layout title="Quote Details">
+                    <BidDetail />
                   </Layout>
                 </PermissionGate>
               </ProtectedRoute>
