@@ -10,7 +10,22 @@ import { Pricing } from './pricing'
 import { AllAssumptions } from './assumptions'
 import { Valuation } from './valuation'
 import { InvestorCohorts } from './investors'
+import { IncomeStatement, BalanceSheet, CashFlowStatement } from './financials'
 import { AuthProvider, ProtectedRoute, LoginPage, RoleSelector, PermissionGate } from './auth'
+import {
+  ProductionDashboard,
+  BOMList,
+  BOMDetail,
+  BOMCostChart,
+  WorkOrderList,
+  WorkOrderDetail,
+  KanbanBoard,
+  RawMaterials,
+  ProductionRecording,
+  QualityControl,
+  MaterialConsumptionPage,
+  FinishedGoods,
+} from './production'
 
 // Placeholder pages for other routes
 function PlaceholderPage({ title }: { title: string }) {
@@ -262,11 +277,193 @@ function App() {
             }
           />
           <Route
+            path="/financials/income-statement"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:projections" fallback={<AccessDenied />}>
+                  <Layout title="Income Statement">
+                    <IncomeStatement />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/financials/balance-sheet"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:projections" fallback={<AccessDenied />}>
+                  <Layout title="Balance Sheet">
+                    <BalanceSheet />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/financials/cash-flow"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:projections" fallback={<AccessDenied />}>
+                  <Layout title="Cash Flow Statement">
+                    <CashFlowStatement />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/pricing"
             element={
               <Layout title="Pricing">
                 <Pricing />
               </Layout>
+            }
+          />
+          
+          {/* Production Routes */}
+          <Route
+            path="/production"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:production" fallback={<AccessDenied />}>
+                  <Layout title="Production Dashboard">
+                    <ProductionDashboard />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/production/bom"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:production" fallback={<AccessDenied />}>
+                  <Layout title="Bill of Materials">
+                    <BOMList />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/production/bom/:id"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:production" fallback={<AccessDenied />}>
+                  <Layout title="BOM Detail">
+                    <BOMDetail />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/production/bom/:id/costs"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:production" fallback={<AccessDenied />}>
+                  <Layout title="BOM Cost Breakdown">
+                    <BOMCostChart />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/production/work-orders"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:production" fallback={<AccessDenied />}>
+                  <Layout title="Work Orders">
+                    <WorkOrderList />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/production/work-orders/:id"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:production" fallback={<AccessDenied />}>
+                  <Layout title="Work Order Detail">
+                    <WorkOrderDetail />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/production/kanban"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:production" fallback={<AccessDenied />}>
+                  <Layout title="Kanban Board">
+                    <KanbanBoard />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/production/materials"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:production" fallback={<AccessDenied />}>
+                  <Layout title="Raw Materials">
+                    <RawMaterials />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/production/record"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:production" fallback={<AccessDenied />}>
+                  <Layout title="Record Production">
+                    <ProductionRecording />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/production/qc"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:production" fallback={<AccessDenied />}>
+                  <Layout title="Quality Control">
+                    <QualityControl />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/production/consumption"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:production" fallback={<AccessDenied />}>
+                  <Layout title="Material Consumption">
+                    <MaterialConsumptionPage />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/production/finished-goods"
+            element={
+              <ProtectedRoute>
+                <PermissionGate permission="view:production" fallback={<AccessDenied />}>
+                  <Layout title="Finished Goods">
+                    <FinishedGoods />
+                  </Layout>
+                </PermissionGate>
+              </ProtectedRoute>
             }
           />
         </Routes>

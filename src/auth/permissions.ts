@@ -11,6 +11,7 @@ export type Permission =
   | 'view:capital'
   | 'view:dcf'
   | 'view:fpa'
+  | 'view:production'
   | 'edit:settings'
   | 'manage:users';
 
@@ -26,6 +27,7 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'view:capital',
     'view:dcf',
     'view:fpa',
+    'view:production',
     'edit:settings',
     'manage:users',
   ],
@@ -40,6 +42,7 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'view:capital',
     'view:dcf',
     'view:fpa',
+    'view:production',
   ],
   
   management: [
@@ -50,6 +53,7 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'view:marketing',
     'view:inventory',
     'view:capital',
+    'view:production',
   ],
   
   sales_marketing: [
@@ -62,6 +66,7 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
   operations: [
     'view:dashboard',
     'view:inventory',
+    'view:production',
   ],
 };
 
